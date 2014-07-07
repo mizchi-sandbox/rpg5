@@ -3,20 +3,12 @@ rename     = require 'gulp-rename'
 plumber    = require 'gulp-plumber'
 concat     = require 'gulp-concat'
 sass       = require 'gulp-sass'
+shell      = require 'gulp-shell'
 bowerFiles = require "gulp-bower-files"
 source     = require 'vinyl-source-stream'
 browserify = require 'browserify'
 
-gulp.task 'js', ->
-  browserify
-    entries: ['./app/initialize.coffee']
-    extensions: ['.coffee','.jade', '.js']
-  .transform 'coffeeify'
-  .transform 'jadeify'
-  .bundle()
-  .pipe plumber()
-  .pipe source 'app.js'
-  .pipe gulp.dest 'public'
+gulp.task 'js', shell.task ['zsh build.zsh']
 
 gulp.task 'vendor', ->
   bowerFiles()
