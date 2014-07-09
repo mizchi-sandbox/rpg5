@@ -1,5 +1,7 @@
-module Wdr.Service
+module Wdr.Services
   class @PlaySession
     gold :: Int
-    constructor: ->
+    name :: String
+    saveId :: String
+    constructor: () ->
       @gold = 0

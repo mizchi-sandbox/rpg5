@@ -1,26 +1,30 @@
-{SaveObject} = Wdr.Storages
+localforage.setDriver('localStorageWrapper')
+
 initializeStorages = -> new Promise (done) ->
   Momic.Model.setup(
     name: 'wdr'
     collections:
       saves: {}
-  ).then done
+  ).then =>
+    if localStorage.getItem('dbInitialized')?
+      done()
+    else
+      Wdr.Storages.SaveObject.insert([
+        {name: 'mizchi', gold: 0}
+        {name: 'smurph', gold: 100000}
+      ]).then =>
+        localStorage.setItem('dbInitialized', 'initialized')
+        done()
 
-Warden::findController = (controllerName) ->
-  Wdr.Controllers[controllerName+'Controller']
+wdr :: Wdr.Application
 
 $ =>
   localforage.clear()
   .then => initializeStorages()
   .then =>
-    saveObject = new SaveObject
-    saveObject.name = 'mizchi'
-    saveObject.gold = 0
-
-    saveObject.save().then =>
-      console.log 'save done!'
-      SaveObject.find().then (saveObjects) =>
-        console.log saveObjects
-
-  router = new Warden
-  router.match '', 'Entry#index'
+    window.wdr = new Wdr.Application
+    Wdr.createRoutes new Warden
+    # router = new Warden
+    # router.match '', 'Entry#index'
+    # router.match 'camp', 'Camp#index'
+    Warden.replaceLinksToHashChange()

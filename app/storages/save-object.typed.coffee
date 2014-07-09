@@ -3,3 +3,4 @@ module Wdr.Storages
     key: 'saves'
     name :: String
     gold :: Int
+    id :: String

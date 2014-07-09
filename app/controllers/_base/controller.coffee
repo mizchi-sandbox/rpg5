@@ -1,7 +1,11 @@
+Layout = Wdr.UI.Components.Layout.Layout
+
 module Wdr.Controllers.Base
   class @Controller extends Warden.Controller
     beforeAction: ->
-      # console.log 'before action'
+      @layout = @reuse Layout
+      @layout.$appendTo 'body'
 
-    afterAction: ->
-      # console.log 'after action'
+Warden::findController = (controllerName) ->
+  Wdr.Controllers[controllerName+'Controller']
+
