@@ -2,15 +2,11 @@
   "files": [
     {
       "from": "index.coffee.hbs",
-      "to": "app/components/{{name}}/{{name}}.coffee"
-    },
-    {
-      "from": "template.jade.hbs",
-      "to": "app/templates/{{name}}/{{name}}.jade"
+      "to": "app/ui/components/{{name}}/{{name}}.coffee"
     },
     {
       "from": "style.sass.hbs",
-      "to": "app/styles/{{name}}/{{name}}.sass"
+      "to": "app/ui/styles/{{name}}/_{{name}}.sass"
     }
   ]
 }

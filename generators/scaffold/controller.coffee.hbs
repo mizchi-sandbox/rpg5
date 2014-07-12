@@ -1,6 +1,8 @@
-Controller = require 'controllers/base/controller'
-{{#camelize}}{{name}}{{/camelize}} = require 'components/{{name}}/{{name}}'
-module.exports = class {{#camelize}}{{name}}{{/camelize}}Controller extends Controller
-  index: ->
-    {{name}} = @reuse '{{name}}', {{#camelize}}{{name}}{{/camelize}}
-    {{name}}.$appendTo '#scene-root'
+Controller = Wdr.Controllers.Base.Controller
+{{#camelize}}{{name}}{{/camelize}} = Wdr.UI.Components.{{#camelize}}{{name}}{{/camelize}}
+
+module Wdr.Controllers
+  class @{{#camelize}}{{name}}{{/camelize}}Controller extends Controller
+    index: ->
+      {{name}} = @reuse {{#camelize}}{{name}}{{/camelize}}
+      {{name}}.$appendTo '#scene-root'
