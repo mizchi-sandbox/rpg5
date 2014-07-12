@@ -227,8 +227,82 @@ function extends$(child, parent) {
 void function () {
     var Component;
     Component = Wdr.UI.Components.Base.Component;
+    _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
+        this.Battle = Component.extend({ template: 'span battle' });
+    });
+    function isOwn$(o, p) {
+        return {}.hasOwnProperty.call(o, p);
+    }
+    function extends$(child, parent) {
+        for (var key in parent)
+            if (isOwn$(parent, key))
+                child[key] = parent[key];
+        function ctor() {
+            this.constructor = child;
+        }
+        ctor.prototype = parent.prototype;
+        child.prototype = new ctor();
+        child.__super__ = parent.prototype;
+        return child;
+    }
+}.call(this);
+void function () {
+    var Component;
+    Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components.Camp', function (Wdr, UI, Components, Camp) {
-        this.Camp = Component.extend({ template: '<h1>Camp</h1>\n<div>\n  name: {{playerName}}\n</div>\n\n<div>\n  gold: {{gold}}\n</div>\n\n<button v-dispatcher=\'debug-add-gold\'>add coin</button>\n<button v-dispatcher=\'save\'>save</button>' });
+        this.Camp = Component.extend({ template: '<h1>Camp</h1>\n<div>\n  name: {{playerName}}\n</div>\n\n<div>\n  gold: {{gold}}\n</div>\n\n<a href=\'dungeon-select\'>\u30c0\u30f3\u30b8\u30e7\u30f3\u3078</a>\n<button v-dispatcher=\'debug-add-gold\'>add coin</button>\n<button v-dispatcher=\'save\'>save</button>' });
+    });
+    function isOwn$(o, p) {
+        return {}.hasOwnProperty.call(o, p);
+    }
+    function extends$(child, parent) {
+        for (var key in parent)
+            if (isOwn$(parent, key))
+                child[key] = parent[key];
+        function ctor() {
+            this.constructor = child;
+        }
+        ctor.prototype = parent.prototype;
+        child.prototype = new ctor();
+        child.__super__ = parent.prototype;
+        return child;
+    }
+}.call(this);
+void function () {
+    var Component;
+    Component = Wdr.UI.Components.Base.Component;
+    _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
+        this.DungeonSelect = Component.extend({
+            template: '<ul>\n  <li v-repeat=\'dungeons\'>\n    <a href=\'/dungeons/{{href}}\'>\n      {{name}}\n    </a>\n  </li>\n</ul>',
+            data: {
+                dungeons: [{
+                        name: '\u8a66\u7df4\u306e\u68ee',
+                        href: 'tutorial'
+                    }]
+            }
+        });
+    });
+    function isOwn$(o, p) {
+        return {}.hasOwnProperty.call(o, p);
+    }
+    function extends$(child, parent) {
+        for (var key in parent)
+            if (isOwn$(parent, key))
+                child[key] = parent[key];
+        function ctor() {
+            this.constructor = child;
+        }
+        ctor.prototype = parent.prototype;
+        child.prototype = new ctor();
+        child.__super__ = parent.prototype;
+        return child;
+    }
+}.call(this);
+void function () {
+    var Component;
+    Component = Wdr.UI.Components.Base.Component;
+    _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
+        this.Dungeon = Component.extend({ template: '<h1>\u30c0\u30f3\u30b8\u30e7\u30f3: {{name}}</h1>\n<button v-dispatcher=\'search\'>\u63a2\u3059</button>\n<button v-dispatcher=\'start-battle\'>\u6226\u95d8</button>' });
     });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
@@ -308,13 +382,7 @@ void function () {
             }
             Controller.prototype.beforeAction = function () {
                 this.layout = this.reuse(Layout);
-                this.layout.$appendTo('body');
-                if (!('undefined' !== typeof wdr && null != wdr ? wdr.currentSession : void 0))
-                    return setTimeout(function (this$) {
-                        return function () {
-                            return this$.navigate('');
-                        };
-                    }(this));
+                return this.layout.$appendTo('body');
             };
             return Controller;
         }(Warden.Controller);
@@ -322,6 +390,40 @@ void function () {
     Warden.prototype.findController = function (controllerName) {
         return Wdr.Controllers[controllerName + 'Controller'];
     };
+    function isOwn$(o, p) {
+        return {}.hasOwnProperty.call(o, p);
+    }
+    function extends$(child, parent) {
+        for (var key in parent)
+            if (isOwn$(parent, key))
+                child[key] = parent[key];
+        function ctor() {
+            this.constructor = child;
+        }
+        ctor.prototype = parent.prototype;
+        child.prototype = new ctor();
+        child.__super__ = parent.prototype;
+        return child;
+    }
+}.call(this);
+void function () {
+    var Battle, Controller;
+    Controller = Wdr.Controllers.Base.Controller;
+    Battle = Wdr.UI.Components.Battle;
+    _module_('Wdr.Controllers', function (Wdr, Controllers) {
+        this.BattleController = function (super$) {
+            extends$(BattleController, super$);
+            function BattleController() {
+                super$.apply(this, arguments);
+            }
+            BattleController.prototype.index = function () {
+                var battle;
+                battle = this.reuse(Battle);
+                return battle.$appendTo('#scene-root');
+            };
+            return BattleController;
+        }(Controller);
+    });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -367,6 +469,84 @@ void function () {
             };
             return CampController;
         }(Controllers.Base.Controller);
+    });
+    function isOwn$(o, p) {
+        return {}.hasOwnProperty.call(o, p);
+    }
+    function extends$(child, parent) {
+        for (var key in parent)
+            if (isOwn$(parent, key))
+                child[key] = parent[key];
+        function ctor() {
+            this.constructor = child;
+        }
+        ctor.prototype = parent.prototype;
+        child.prototype = new ctor();
+        child.__super__ = parent.prototype;
+        return child;
+    }
+}.call(this);
+void function () {
+    var Controller, Dungeon;
+    Controller = Wdr.Controllers.Base.Controller;
+    Dungeon = Wdr.UI.Components.Dungeon;
+    _module_('Wdr.Controllers', function (Wdr, Controllers) {
+        this.DungeonController = function (super$) {
+            extends$(DungeonController, super$);
+            function DungeonController() {
+                super$.apply(this, arguments);
+            }
+            DungeonController.prototype.index = function (req) {
+                var dungeon;
+                dungeon = this.reuse(Dungeon);
+                dungeon.$appendTo('#scene-root');
+                dungeon.$data.name = req.name;
+                return dungeon.on('start-battle', function (this$) {
+                    return function () {
+                        wdr.context = {
+                            from: location.hash,
+                            enemies: ['goblin']
+                        };
+                        return this$.navigate('battle');
+                    };
+                }(this));
+            };
+            return DungeonController;
+        }(Controller);
+    });
+    function isOwn$(o, p) {
+        return {}.hasOwnProperty.call(o, p);
+    }
+    function extends$(child, parent) {
+        for (var key in parent)
+            if (isOwn$(parent, key))
+                child[key] = parent[key];
+        function ctor() {
+            this.constructor = child;
+        }
+        ctor.prototype = parent.prototype;
+        child.prototype = new ctor();
+        child.__super__ = parent.prototype;
+        return child;
+    }
+}.call(this);
+void function () {
+    var Controller, DungeonSelect;
+    Controller = Wdr.Controllers.Base.Controller;
+    DungeonSelect = Wdr.UI.Components.DungeonSelect;
+    _module_('Wdr.Controllers', function (Wdr, Controllers) {
+        this.DungeonSelectController = function (super$) {
+            extends$(DungeonSelectController, super$);
+            function DungeonSelectController() {
+                super$.apply(this, arguments);
+            }
+            DungeonSelectController.prototype.index = function () {
+                var dungeonSelect;
+                dungeonSelect = this.reuse(DungeonSelect);
+                return dungeonSelect.$appendTo('#scene-root');
+            };
+            return DungeonSelectController;
+        }(Controller);
     });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
@@ -435,7 +615,10 @@ void function () {
 }.call(this);
 Wdr.createRoutes = function (router) {
     router.match('', 'Entry#index');
-    return router.match('camp', 'Camp#index');
+    router.match('camp', 'Camp#index');
+    router.match('dungeon-select', 'DungeonSelect#index');
+    router.match('dungeons/:name', 'Dungeon#index');
+    return router.match('battle', 'Battle#index');
 };
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
@@ -520,7 +703,6 @@ void function () {
         return new Promise(function (done) {
             return Wdr.Storages.SaveObject.findOne({ id: localStorage.currentPlayerId }).then(function (saveObject) {
                 wdr.currentSession = Wdr.Application.createPlaySession(saveObject);
-                Warden.navigate('camp');
                 return done();
             });
         });
