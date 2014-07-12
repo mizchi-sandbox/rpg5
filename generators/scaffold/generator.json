@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "from": "controller.coffee.hbs",
+      "to": "app/controllers/{{name}}-controller.coffee"
+    },
+    {
+      "from": "index.coffee.hbs",
+      "to": "app/components/{{name}}/{{name}}.coffee"
+    },
+    {
+      "from": "template.jade.hbs",
+      "to": "app/templates/{{name}}/{{name}}.jade"
+    },
+    {
+      "from": "style.sass.hbs",
+      "to": "app/styles/{{name}}/{{name}}.sass"
+    }
+  ]
+}

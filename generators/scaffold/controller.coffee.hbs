@@ -1,0 +1,6 @@
+Controller = require 'controllers/base/controller'
+{{#camelize}}{{name}}{{/camelize}} = require 'components/{{name}}/{{name}}'
+module.exports = class {{#camelize}}{{name}}{{/camelize}}Controller extends Controller
+  index: ->
+    {{name}} = @reuse '{{name}}', {{#camelize}}{{name}}{{/camelize}}
+    {{name}}.$appendTo '#scene-root'
