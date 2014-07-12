@@ -5,4 +5,9 @@ module Wdr.Controllers
     index: ->
       camp = @reuse Camp
       camp.$appendTo '#scene-root'
-      camp
+      camp.$data.playerName = wdr.currentSession.name
+      camp.$data.gold = wdr.currentSession.gold
+      camp.on 'debug-add-gold', =>
+        camp.$data.gold = camp.$data.gold + 100
+
+

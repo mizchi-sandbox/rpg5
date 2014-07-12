@@ -16,15 +16,21 @@ initializeStorages = -> new Promise (done) ->
         localStorage.setItem('dbInitialized', 'initialized')
         done()
 
-wdr :: Wdr.Application
+# wdr :: Wdr.Application
+restoreLastSession = ->
+
+startRouter = ->
+  Warden.replaceLinksToHashChange()
+  Wdr.createRoutes new Warden
 
 $ =>
-  localforage.clear()
-  .then => initializeStorages()
-  .then =>
-    window.wdr = new Wdr.Application
-    Wdr.createRoutes new Warden
-    # router = new Warden
-    # router.match '', 'Entry#index'
-    # router.match 'camp', 'Camp#index'
-    Warden.replaceLinksToHashChange()
+  # localforage.clear().then =>
+    initializeStorages().then =>
+      window.wdr = new Wdr.Application
+      if localStorage.currentPlayerId
+        Wdr.Storages.SaveObject.findOne(id: localStorage.currentPlayerId).then (saveObject :: Wdr.Storages.SaveObject) =>
+          wdr.currentSession = Wdr.Application.createPlaySession(saveObject)
+          Warden.navigate('camp')
+          startRouter()
+      else
+        startRouter()

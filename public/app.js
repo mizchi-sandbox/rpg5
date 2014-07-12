@@ -217,7 +217,7 @@ void function () {
     var Component;
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components.Camp', function (Wdr, UI, Components, Camp) {
-        this.Camp = Component.extend({ template: '<h1>Camp</h1>' });
+        this.Camp = Component.extend({ template: '<h1>Camp</h1>\n<div>\n  name: {{playerName}}\n</div>\n\n<div>\n  gold: {{gold}}\n</div>\n\n<button v-dispatcher=\'debug-add-gold\'>add coin</button>' });
     });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
@@ -297,7 +297,13 @@ void function () {
             }
             Controller.prototype.beforeAction = function () {
                 this.layout = this.reuse(Layout);
-                return this.layout.$appendTo('body');
+                this.layout.$appendTo('body');
+                if (!('undefined' !== typeof wdr && null != wdr ? wdr.currentSession : void 0))
+                    return setTimeout(function (this$) {
+                        return function () {
+                            return this$.navigate('');
+                        };
+                    }(this));
             };
             return Controller;
         }(Warden.Controller);
@@ -334,7 +340,11 @@ void function () {
                 var camp;
                 camp = this.reuse(Camp);
                 camp.$appendTo('#scene-root');
-                return camp;
+                camp.$data.playerName = wdr.currentSession.name;
+                camp.$data.gold = wdr.currentSession.gold;
+                return camp.on('debug-add-gold', function () {
+                    return camp.$data.gold = camp.$data.gold + 100;
+                });
             };
             return CampController;
         }(Controllers.Base.Controller);
@@ -368,6 +378,7 @@ void function () {
                 return new Promise(function (this$) {
                     return function (done) {
                         var entry;
+                        delete localStorage.currentPlayerId;
                         entry = this$.reuse(Entry);
                         Wdr.Storages.SaveObject.find().then(function (saveObjects) {
                             entry.$data.saveObjects = saveObjects;
@@ -377,6 +388,7 @@ void function () {
                         return entry.on('game-selected', function (this$1) {
                             return function (saveObject) {
                                 wdr.currentSession = Wdr.Application.createPlaySession(saveObject);
+                                localStorage.currentPlayerId = saveObject.id;
                                 return this$1.navigate('camp');
                             };
                         }(this$));
@@ -424,16 +436,17 @@ function extends$(child, parent) {
 _module_('Wdr', function (Wdr) {
     this.Application = function () {
         0;
+        0;
         Application.createPlaySession = function (saveObject) {
             var session;
             session = new Wdr.Services.PlaySession();
             session.saveId = saveObject.id;
             session.name = saveObject.name;
-            return session.gold = saveObject.gold;
+            session.gold = saveObject.gold;
+            return session;
         };
         Application.prototype.savePlaySession = function () {
         };
-        0;
         0;
         function Application() {
         }
@@ -456,7 +469,7 @@ function extends$(child, parent) {
     return child;
 }
 void function () {
-    var initializeStorages;
+    var initializeStorages, restoreLastSession, startRouter;
     localforage.setDriver('localStorageWrapper');
     initializeStorages = function () {
         return new Promise(function (done) {
@@ -484,14 +497,24 @@ void function () {
             });
         });
     };
-    0;
+    restoreLastSession = function () {
+    };
+    startRouter = function () {
+        Warden.replaceLinksToHashChange();
+        return Wdr.createRoutes(new Warden());
+    };
     $(function () {
-        return localforage.clear().then(function () {
-            return initializeStorages().then(function () {
-                window.wdr = new Wdr.Application();
-                Wdr.createRoutes(new Warden());
-                return Warden.replaceLinksToHashChange();
-            });
+        return initializeStorages().then(function () {
+            window.wdr = new Wdr.Application();
+            if (localStorage.currentPlayerId) {
+                return Wdr.Storages.SaveObject.findOne({ id: localStorage.currentPlayerId }).then(function (saveObject) {
+                    wdr.currentSession = Wdr.Application.createPlaySession(saveObject);
+                    Warden.navigate('camp');
+                    return startRouter();
+                });
+            } else {
+                return startRouter();
+            }
         });
     });
     function isOwn$(o, p) {
