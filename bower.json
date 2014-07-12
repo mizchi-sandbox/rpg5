@@ -19,6 +19,8 @@
     "momic": "~0.3.6",
     "warden": "~0.0.3",
     "vue": "~0.10.5",
-    "localforage": "~0.9.1"
+    "localforage": "~0.9.1",
+    "phaser": "~2.0.4",
+    "velocity": "~0.6.0"
   }
 }
