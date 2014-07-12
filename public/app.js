@@ -3,6 +3,23 @@ _module_('_', function (_) {
     0;
 });
 _module_('Wdr.ValueObjects', function (Wdr, ValueObjects) {
+    this.Report = function () {
+        0;
+        0;
+        0;
+        function Report(param$) {
+            var cache$;
+            {
+                cache$ = param$;
+                this.eventType = cache$.eventType;
+                this.log = cache$.log;
+                this.battlerId = cache$.battlerId;
+            }
+        }
+        return Report;
+    }();
+});
+_module_('Wdr.ValueObjects', function (Wdr, ValueObjects) {
     this.ValueWithMax = function () {
         0;
         0;
@@ -39,6 +56,63 @@ _module_('Wdr.Entities.Base', function (Wdr, Entities, Base) {
         return Entity;
     }();
 });
+void function () {
+    var ValueWithMax;
+    ValueWithMax = Wdr.ValueObjects.ValueWithMax;
+    _module_('Wdr.Entities.Battle', function (Wdr, Entities, Battle) {
+        this.Battler = function (super$) {
+            extends$(Battler, super$);
+            0;
+            0;
+            0;
+            0;
+            function Battler(param$) {
+                var cache$, hp, wt;
+                {
+                    cache$ = param$;
+                    this.name = cache$.name;
+                    this.lv = cache$.lv;
+                    hp = cache$.hp;
+                    wt = cache$.wt;
+                    this.id = cache$.id;
+                }
+                this.hp = new Wdr.ValueObjects.ValueWithMax(hp, hp);
+                this.wt = new Wdr.ValueObjects.ValueWithMax(0, wt);
+            }
+            Battler.prototype.toJSON = function () {
+                return {
+                    name: this.name,
+                    id: this.id,
+                    lv: this.lv,
+                    wt: {
+                        current: this.wt.current,
+                        max: this.wt.max
+                    },
+                    hp: {
+                        current: this.hp.current,
+                        max: this.hp.max
+                    }
+                };
+            };
+            return Battler;
+        }(Wdr.Entities.Base.Entity);
+    });
+    function isOwn$(o, p) {
+        return {}.hasOwnProperty.call(o, p);
+    }
+    function extends$(child, parent) {
+        for (var key in parent)
+            if (isOwn$(parent, key))
+                child[key] = parent[key];
+        function ctor() {
+            this.constructor = child;
+        }
+        ctor.prototype = parent.prototype;
+        child.prototype = new ctor();
+        child.__super__ = parent.prototype;
+        return child;
+    }
+}.call(this);
 _module_('Wdr.Entities', function (Wdr, Entities) {
     this.Player = function (super$) {
         extends$(Player, super$);
@@ -122,6 +196,117 @@ function extends$(child, parent) {
     return child;
 }
 _module_('Wdr.Services', function (Wdr, Services) {
+    this.BattleSession = function () {
+        function BattleSession() {
+            this.players = [
+                new Wdr.Entities.Battle.Battler({
+                    name: 'mizchi',
+                    lv: 1,
+                    hp: 30,
+                    wt: 10,
+                    id: 1
+                }),
+                new Wdr.Entities.Battle.Battler({
+                    name: 'bot1',
+                    lv: 3,
+                    hp: 20,
+                    wt: 30,
+                    id: 2
+                })
+            ];
+            this.enemies = [
+                new Wdr.Entities.Battle.Battler({
+                    name: 'goblin#1',
+                    lv: 1,
+                    wt: 15,
+                    hp: 12,
+                    id: 3
+                }),
+                new Wdr.Entities.Battle.Battler({
+                    name: 'goblin#2',
+                    lv: 1,
+                    wt: 15,
+                    hp: 12,
+                    id: 4
+                }),
+                new Wdr.Entities.Battle.Battler({
+                    name: 'goblin#3',
+                    lv: 1,
+                    wt: 15,
+                    hp: 12,
+                    id: 5
+                })
+            ];
+        }
+        BattleSession.prototype.findBattlerById = function (battlerId) {
+            return _.find([].concat(this.players, this.enemies), function (battler) {
+                return battler.id === battlerId;
+            });
+        };
+        BattleSession.prototype.processTurn = function () {
+            return new Promise(function (this$) {
+                return function (done) {
+                    var p, reports;
+                    reports = [];
+                    for (var cache$ = [].concat(this$.players, this$.enemies), i$ = 0, length$ = cache$.length; i$ < length$; ++i$) {
+                        p = cache$[i$];
+                        if (p.wt.current < p.wt.max) {
+                            p.wt.current++;
+                        } else if (in$(p, this$.players)) {
+                            reports.push(new Wdr.ValueObjects.Report({
+                                eventType: 'stopForUserInput',
+                                log: '' + p.name + '\u306f\u5165\u529b\u3092\u5f85\u3063\u3066\u3044\u308b',
+                                battlerId: p.id
+                            }));
+                            break;
+                        } else {
+                            p.wt.current = 1;
+                            reports.push(new Wdr.ValueObjects.Report({
+                                eventType: 'action',
+                                log: '' + p.name + '\u306e\u884c\u52d5',
+                                battlerId: p.id
+                            }));
+                        }
+                    }
+                    return done(reports);
+                };
+            }(this));
+        };
+        BattleSession.prototype.toJSON = function () {
+            return {
+                players: this.players.map(function (p) {
+                    return p.toJSON();
+                }),
+                enemies: this.enemies.map(function (e) {
+                    return e.toJSON();
+                })
+            };
+        };
+        return BattleSession;
+    }();
+});
+function isOwn$(o, p) {
+    return {}.hasOwnProperty.call(o, p);
+}
+function extends$(child, parent) {
+    for (var key in parent)
+        if (isOwn$(parent, key))
+            child[key] = parent[key];
+    function ctor() {
+        this.constructor = child;
+    }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor();
+    child.__super__ = parent.prototype;
+    return child;
+}
+function in$(member, list) {
+    for (var i = 0, length = list.length; i < length; ++i)
+        if (i in list && list[i] === member)
+            return true;
+    return false;
+}
+_module_('Wdr.Services', function (Wdr, Services) {
     this.PlaySession = function () {
         0;
         0;
@@ -158,6 +343,12 @@ function extends$(child, parent) {
     child.__super__ = parent.prototype;
     return child;
 }
+function in$(member, list) {
+    for (var i = 0, length = list.length; i < length; ++i)
+        if (i in list && list[i] === member)
+            return true;
+    return false;
+}
 _module_('Wdr.Storages', function (Wdr, Storages) {
     this.SaveObject = function (super$) {
         extends$(SaveObject, super$);
@@ -185,6 +376,12 @@ function extends$(child, parent) {
     child.prototype = new ctor();
     child.__super__ = parent.prototype;
     return child;
+}
+function in$(member, list) {
+    for (var i = 0, length = list.length; i < length; ++i)
+        if (i in list && list[i] === member)
+            return true;
+    return false;
 }
 Vue.directive('dispatcher', {
     isLiteral: true,
@@ -224,6 +421,12 @@ function extends$(child, parent) {
     child.__super__ = parent.prototype;
     return child;
 }
+function in$(member, list) {
+    for (var i = 0, length = list.length; i < length; ++i)
+        if (i in list && list[i] === member)
+            return true;
+    return false;
+}
 void function () {
     var Battler, Component, Skill;
     Component = Wdr.UI.Components.Base.Component;
@@ -260,6 +463,12 @@ void function () {
         child.__super__ = parent.prototype;
         return child;
     }
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
 }.call(this);
 void function () {
     var Component;
@@ -281,6 +490,12 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
+    }
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
     }
 }.call(this);
 void function () {
@@ -312,6 +527,12 @@ void function () {
         child.__super__ = parent.prototype;
         return child;
     }
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
 }.call(this);
 void function () {
     var Component;
@@ -333,6 +554,12 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
+    }
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
     }
 }.call(this);
 void function () {
@@ -363,6 +590,12 @@ void function () {
         child.__super__ = parent.prototype;
         return child;
     }
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
 }.call(this);
 void function () {
     var Component;
@@ -384,6 +617,12 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
+    }
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
     }
 }.call(this);
 void function () {
@@ -420,157 +659,17 @@ void function () {
         child.__super__ = parent.prototype;
         return child;
     }
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
 }.call(this);
 void function () {
-    var Battle, Controller, ValueWithMax;
+    var Battle, Controller;
     Controller = Wdr.Controllers.Base.Controller;
     Battle = Wdr.UI.Components.Battle;
-    ValueWithMax = Wdr.ValueObjects.ValueWithMax;
-    _module_('Wdr.ValueObjects', function (Wdr, ValueObjects) {
-        this.Report = function () {
-            0;
-            0;
-            0;
-            function Report(param$) {
-                var cache$;
-                {
-                    cache$ = param$;
-                    this.eventType = cache$.eventType;
-                    this.log = cache$.log;
-                    this.battlerId = cache$.battlerId;
-                }
-            }
-            return Report;
-        }();
-    });
-    _module_('Wdr.Entities.Battle', function (Wdr, Entities, Battle) {
-        this.Battler = function (super$) {
-            extends$(Battler, super$);
-            0;
-            0;
-            0;
-            0;
-            function Battler(param$) {
-                var cache$, hp, wt;
-                {
-                    cache$ = param$;
-                    this.name = cache$.name;
-                    this.lv = cache$.lv;
-                    hp = cache$.hp;
-                    wt = cache$.wt;
-                    this.id = cache$.id;
-                }
-                this.hp = new Wdr.ValueObjects.ValueWithMax(hp, hp);
-                this.wt = new Wdr.ValueObjects.ValueWithMax(0, wt);
-            }
-            Battler.prototype.toJSON = function () {
-                return {
-                    name: this.name,
-                    id: this.id,
-                    lv: this.lv,
-                    wt: {
-                        current: this.wt.current,
-                        max: this.wt.max
-                    },
-                    hp: {
-                        current: this.hp.current,
-                        max: this.hp.max
-                    }
-                };
-            };
-            return Battler;
-        }(Wdr.Entities.Base.Entity);
-    });
-    _module_('Wdr.Services', function (Wdr, Services) {
-        this.BattleSession = function () {
-            function BattleSession() {
-                this.players = [
-                    new Wdr.Entities.Battle.Battler({
-                        name: 'mizchi',
-                        lv: 1,
-                        hp: 30,
-                        wt: 10,
-                        id: 1
-                    }),
-                    new Wdr.Entities.Battle.Battler({
-                        name: 'bot1',
-                        lv: 3,
-                        hp: 20,
-                        wt: 30,
-                        id: 2
-                    })
-                ];
-                this.enemies = [
-                    new Wdr.Entities.Battle.Battler({
-                        name: 'goblin#1',
-                        lv: 1,
-                        wt: 15,
-                        hp: 12,
-                        id: 3
-                    }),
-                    new Wdr.Entities.Battle.Battler({
-                        name: 'goblin#2',
-                        lv: 1,
-                        wt: 15,
-                        hp: 12,
-                        id: 4
-                    }),
-                    new Wdr.Entities.Battle.Battler({
-                        name: 'goblin#3',
-                        lv: 1,
-                        wt: 15,
-                        hp: 12,
-                        id: 5
-                    })
-                ];
-            }
-            BattleSession.prototype.findBattlerById = function (battlerId) {
-                return _.find([].concat(this.players, this.enemies), function (battler) {
-                    return battler.id === battlerId;
-                });
-            };
-            BattleSession.prototype.processTurn = function () {
-                return new Promise(function (this$) {
-                    return function (done) {
-                        var p, reports;
-                        reports = [];
-                        for (var cache$ = [].concat(this$.players, this$.enemies), i$ = 0, length$ = cache$.length; i$ < length$; ++i$) {
-                            p = cache$[i$];
-                            if (p.wt.current < p.wt.max) {
-                                p.wt.current++;
-                            } else if (in$(p, this$.players)) {
-                                reports.push(new Wdr.ValueObjects.Report({
-                                    eventType: 'stopForUserInput',
-                                    log: '' + p.name + '\u306f\u5165\u529b\u3092\u5f85\u3063\u3066\u3044\u308b',
-                                    battlerId: p.id
-                                }));
-                                break;
-                            } else {
-                                p.wt.current = 0;
-                                reports.push(new Wdr.ValueObjects.Report({
-                                    eventType: 'action',
-                                    log: '' + p.name + '\u306e\u884c\u52d5',
-                                    battlerId: p.id
-                                }));
-                            }
-                        }
-                        return done(reports);
-                    };
-                }(this));
-            };
-            BattleSession.prototype.toJSON = function () {
-                return {
-                    players: this.players.map(function (p) {
-                        return p.toJSON();
-                    }),
-                    enemies: this.enemies.map(function (e) {
-                        return e.toJSON();
-                    })
-                };
-            };
-            return BattleSession;
-        }();
-    });
     0;
     _module_('Wdr.Controllers', function (Wdr, Controllers) {
         this.BattleController = function (super$) {
@@ -589,6 +688,30 @@ void function () {
                 };
                 super$.apply(this, arguments);
             }
+            BattleController.prototype.index = function () {
+                var battle;
+                this.battle = battle = this.reuse(Battle);
+                this.battle.$appendTo('#scene-root');
+                this.session = new Wdr.Services.BattleSession();
+                this.battle.$data = this.session.toJSON();
+                this.battle.$data.log = [{ message: '\u958b\u59cb' }];
+                this.battle.$data.onUserInput = false;
+                this.battle.$data.skills = [
+                    {
+                        name: '\u653b\u6483',
+                        skillId: 'attack'
+                    },
+                    {
+                        name: '\u9632\u5fa1',
+                        skillId: 'defenece'
+                    }
+                ];
+                return setTimeout(function (this$) {
+                    return function () {
+                        return this$.startGameLoop();
+                    };
+                }(this));
+            };
             BattleController.prototype.waitUserSelect = function (actorId) {
                 return new Promise(function (this$) {
                     return function (done) {
@@ -633,7 +756,7 @@ void function () {
                                                 return function (userInput) {
                                                     var actor;
                                                     actor = this$3.session.findBattlerById(userInput.actorId);
-                                                    actor.wt.current = 0;
+                                                    actor.wt.current = 1;
                                                     this$3.battle.$data.onUserInput = false;
                                                     return done();
                                                 };
@@ -645,30 +768,6 @@ void function () {
                                 }(this$1), 50);
                             };
                         }(this$));
-                    };
-                }(this));
-            };
-            BattleController.prototype.index = function () {
-                var battle;
-                this.battle = battle = this.reuse(Battle);
-                this.battle.$appendTo('#scene-root');
-                this.session = new Wdr.Services.BattleSession();
-                this.battle.$data = this.session.toJSON();
-                this.battle.$data.log = [{ message: '\u958b\u59cb' }];
-                this.battle.$data.onUserInput = false;
-                this.battle.$data.skills = [
-                    {
-                        name: '\u653b\u6483',
-                        skillId: 'attack'
-                    },
-                    {
-                        name: '\u9632\u5fa1',
-                        skillId: 'defenece'
-                    }
-                ];
-                return setTimeout(function (this$) {
-                    return function () {
-                        return this$.startGameLoop();
                     };
                 }(this));
             };
