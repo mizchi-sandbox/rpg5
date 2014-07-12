@@ -5,8 +5,8 @@ module Wdr.Controllers.Base
     beforeAction: ->
       @layout = @reuse Layout
       @layout.$appendTo 'body'
-      unless wdr?.currentSession
-        setTimeout => @navigate ''
+      # unless wdr?.currentSession
+      #   setTimeout => @navigate ''
 
 Warden::findController = (controllerName) ->
   Wdr.Controllers[controllerName+'Controller']

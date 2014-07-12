@@ -12,6 +12,7 @@ module Wdr.UI.Components.Camp
       gold: {{gold}}
     </div>
 
+    <a href='dungeon-select'>ダンジョンへ</a>
     <button v-dispatcher='debug-add-gold'>add coin</button>
     <button v-dispatcher='save'>save</button>
     '''
