@@ -13,4 +13,5 @@ module Wdr.UI.Components.Camp
     </div>
 
     <button v-dispatcher='debug-add-gold'>add coin</button>
+    <button v-dispatcher='save'>save</button>
     '''

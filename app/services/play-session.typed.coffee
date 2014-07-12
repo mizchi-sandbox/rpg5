@@ -5,3 +5,9 @@ module Wdr.Services
     saveId :: String
     constructor: () ->
       @gold = 0
+
+    save: -> new Promise (done) =>
+      Wdr.Storages.SaveObject.findOne(id: @saveId).then (saveObject) =>
+        saveObject.save({
+          gold: @gold
+        }).then done

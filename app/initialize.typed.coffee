@@ -17,7 +17,12 @@ initializeStorages = -> new Promise (done) ->
         done()
 
 # wdr :: Wdr.Application
-restoreLastSession = ->
+restoreLastSession = -> new Promise (done) ->
+  Wdr.Storages.SaveObject.findOne(id: localStorage.currentPlayerId).then (saveObject :: Wdr.Storages.SaveObject) =>
+    wdr.currentSession = Wdr.Application.createPlaySession(saveObject)
+    Warden.navigate('camp')
+    done()
+    # startRouter()
 
 startRouter = ->
   Warden.replaceLinksToHashChange()
@@ -28,9 +33,6 @@ $ =>
     initializeStorages().then =>
       window.wdr = new Wdr.Application
       if localStorage.currentPlayerId
-        Wdr.Storages.SaveObject.findOne(id: localStorage.currentPlayerId).then (saveObject :: Wdr.Storages.SaveObject) =>
-          wdr.currentSession = Wdr.Application.createPlaySession(saveObject)
-          Warden.navigate('camp')
-          startRouter()
+        restoreLastSession().then => startRouter()
       else
         startRouter()

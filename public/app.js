@@ -129,6 +129,17 @@ _module_('Wdr.Services', function (Wdr, Services) {
         function PlaySession() {
             this.gold = 0;
         }
+        PlaySession.prototype.save = function () {
+            return new Promise(function (this$) {
+                return function (done) {
+                    return Wdr.Storages.SaveObject.findOne({ id: this$.saveId }).then(function (this$1) {
+                        return function (saveObject) {
+                            return saveObject.save({ gold: this$1.gold }).then(done);
+                        };
+                    }(this$));
+                };
+            }(this));
+        };
         return PlaySession;
     }();
 });
@@ -217,7 +228,7 @@ void function () {
     var Component;
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components.Camp', function (Wdr, UI, Components, Camp) {
-        this.Camp = Component.extend({ template: '<h1>Camp</h1>\n<div>\n  name: {{playerName}}\n</div>\n\n<div>\n  gold: {{gold}}\n</div>\n\n<button v-dispatcher=\'debug-add-gold\'>add coin</button>' });
+        this.Camp = Component.extend({ template: '<h1>Camp</h1>\n<div>\n  name: {{playerName}}\n</div>\n\n<div>\n  gold: {{gold}}\n</div>\n\n<button v-dispatcher=\'debug-add-gold\'>add coin</button>\n<button v-dispatcher=\'save\'>save</button>' });
     });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
@@ -342,8 +353,16 @@ void function () {
                 camp.$appendTo('#scene-root');
                 camp.$data.playerName = wdr.currentSession.name;
                 camp.$data.gold = wdr.currentSession.gold;
-                return camp.on('debug-add-gold', function () {
-                    return camp.$data.gold = camp.$data.gold + 100;
+                camp.on('debug-add-gold', function () {
+                    var gold;
+                    gold = camp.$data.gold + 100;
+                    camp.$data.gold = gold;
+                    return wdr.currentSession.gold = gold;
+                });
+                return camp.on('save', function () {
+                    return wdr.currentSession.save().done(function () {
+                        return console.log('save done');
+                    });
                 });
             };
             return CampController;
@@ -498,6 +517,13 @@ void function () {
         });
     };
     restoreLastSession = function () {
+        return new Promise(function (done) {
+            return Wdr.Storages.SaveObject.findOne({ id: localStorage.currentPlayerId }).then(function (saveObject) {
+                wdr.currentSession = Wdr.Application.createPlaySession(saveObject);
+                Warden.navigate('camp');
+                return done();
+            });
+        });
     };
     startRouter = function () {
         Warden.replaceLinksToHashChange();
@@ -507,9 +533,7 @@ void function () {
         return initializeStorages().then(function () {
             window.wdr = new Wdr.Application();
             if (localStorage.currentPlayerId) {
-                return Wdr.Storages.SaveObject.findOne({ id: localStorage.currentPlayerId }).then(function (saveObject) {
-                    wdr.currentSession = Wdr.Application.createPlaySession(saveObject);
-                    Warden.navigate('camp');
+                return restoreLastSession().then(function () {
                     return startRouter();
                 });
             } else {
