@@ -560,7 +560,7 @@ void function () {
             template: '<ul>\n  <li v-repeat=\'dungeons\'>\n    <a href=\'/dungeons/{{href}}\'>\n      {{name}}\n    </a>\n  </li>\n</ul>',
             data: {
                 dungeons: [{
-                        name: '\u8a66\u7df4\u306e\u68ee',
+                        name: '\u30c1\u30e5\u30fc\u30c8\u30ea\u30a2\u30eb\u30b9\u30c6\u30fc\u30b8',
                         href: 'tutorial'
                     }]
             }

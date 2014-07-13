@@ -15,7 +15,7 @@ module Wdr.UI.Components
     data:
       dungeons: [
         {
-          name: '試練の森'
+          name: 'チュートリアルステージ'
           href: 'tutorial'
         }
       ]
