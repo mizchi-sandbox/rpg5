@@ -475,7 +475,7 @@ void function () {
                 skill: Skill,
                 target: Target
             },
-            template: '<h2>Players</h2>\n\n<ul class=\'players\'>\n  <li v-repeat=\'players\' v-component=\'battler\'></li>\n</ul>\n\n<h2>Enemies</h2>\n\n<ul class=\'enemies\'>\n  <li v-repeat=\'enemies\' v-component=\'battler\'></li>\n</ul>\n\n<div v-show=\'onUserInput\'>\n  <div v-show=\'inputState == "skill-select"\'>\n    <h2>SkillSelector</h2>\n    <ul class=\'skills\'>\n      <li v-repeat=\'skills\' v-component=\'skill\'></li>\n    </ul>\n  </div>\n\n  <div v-show=\'inputState == "target-select"\'>\n    <h2>TargetSelector</h2>\n    <ul class=\'targets\'>\n      <li v-repeat=\'targets\' v-component=\'target\'></li>\n    </ul>\n  </div>\n</div>\n\n<h2>Log</h2>\n<ul class=\'logs\'>\n  <li v-repeat=\'log\'>\n    {{message}}\n  </li>\n</ul>'
+            template: '<h2>Players</h2>\n\n<ul class=\'players\'>\n  <li v-repeat=\'players\' v-component=\'battler\'></li>\n</ul>\n\n<h2>Enemies</h2>\n\n<ul class=\'enemies\'>\n  <li v-repeat=\'enemies\' v-component=\'battler\'></li>\n</ul>\n\n<div v-show=\'onUserInput\'>\n  <div v-show=\'inputState == "skill-select"\'>\n    <h2>SkillSelector</h2>\n    <ul class=\'skills\'>\n      <li v-repeat=\'skills\' v-component=\'skill\'></li>\n    </ul>\n  </div>\n\n  <div v-show=\'inputState == "target-select"\'>\n    <h2>TargetSelector</h2>\n    <ul class=\'targets\'>\n      <li v-repeat=\'targets\' v-component=\'target\'></li>\n      <li>\n        <button v-dispatcher=\'back-to-skill-select\'>\u623b\u308b</button>\n      </li>\n    </ul>\n  </div>\n</div>\n\n<h2>Log</h2>\n<ul class=\'logs\'>\n  <li v-repeat=\'log\'>\n    {{message}}\n  </li>\n</ul>'
         });
     });
     function isOwn$(o, p) {
@@ -758,8 +758,8 @@ void function () {
             BattleController.prototype.waitUserInput = function (actorId) {
                 return new Promise(function (this$) {
                     return function (done) {
-                        var Story, story;
-                        Story = Libretto.extend({
+                        var UserInputStory;
+                        UserInputStory = Libretto.extend({
                             steps: {
                                 start: 'waitSkillSelect',
                                 waitSkillSelect: [
@@ -772,16 +772,19 @@ void function () {
                                 ]
                             },
                             waitSkillSelect: function (this$1) {
-                                return function (context) {
+                                return function (userInputContext) {
                                     return new Promise(function (this$2) {
                                         return function (done) {
-                                            console.log('story start');
                                             this$2.battle.$data.inputState = 'skill-select';
                                             return this$2.battle.$on('skill-selected', function (this$3) {
                                                 return function (skillId) {
                                                     this$3.battle.$off('skill-selected');
-                                                    context.skillId = skillId;
-                                                    return done('waitTargetSelect');
+                                                    userInputContext.skillId = skillId;
+                                                    if (skillId === 'defenece') {
+                                                        return done('end');
+                                                    } else {
+                                                        return done('waitTargetSelect');
+                                                    }
                                                 };
                                             }(this$2));
                                         };
@@ -789,7 +792,7 @@ void function () {
                                 };
                             }(this$),
                             waitTargetSelect: function (this$1) {
-                                return function (context) {
+                                return function (userInputContext) {
                                     return new Promise(function (this$2) {
                                         return function (done) {
                                             this$2.battle.$data.inputState = 'target-select';
@@ -798,11 +801,19 @@ void function () {
                                             }).filter(function (e) {
                                                 return e.hp.current > 0;
                                             });
-                                            return this$2.battle.$on('target-selected', function (this$3) {
+                                            this$2.battle.$on('target-selected', function (this$3) {
                                                 return function (targetId) {
+                                                    this$3.battle.$off('back-to-skill-select');
                                                     this$3.battle.$off('target-selected');
-                                                    context.targetId = targetId;
+                                                    userInputContext.targetId = targetId;
                                                     return done('end');
+                                                };
+                                            }(this$2));
+                                            return this$2.battle.$on('back-to-skill-select', function (this$3) {
+                                                return function () {
+                                                    this$3.battle.$off('back-to-skill-select');
+                                                    this$3.battle.$off('target-selected');
+                                                    return done('waitSkillSelect');
                                                 };
                                             }(this$2));
                                         };
@@ -811,8 +822,7 @@ void function () {
                             }(this$)
                         });
                         this$.log('\u5165\u529b\u3092\u5f85\u3063\u3066\u3044\u307e\u3059...');
-                        story = new Story();
-                        return story.ready().then(function (context) {
+                        return new UserInputStory().ready().then(function (context) {
                             context.actorId = actorId;
                             return done(context);
                         });
