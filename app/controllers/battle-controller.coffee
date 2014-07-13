@@ -36,14 +36,11 @@ module Wdr.Controllers
 
     # waitUserInput :: String -> Promise<Any>
     waitUserInput: (actorId) -> new Promise (done) =>
-      class Story extends Libretto
+      Story = Libretto.extend
         steps:
           'start': 'waitSkillSelect'
           'waitSkillSelect': ['waitTargetSelect', 'end']
           'waitTargetSelect': ['waitSkillSelect', 'end']
-
-        constructor: (@battle, @session) ->
-          super
 
         waitSkillSelect: (context) => new Promise (done) =>
           console.log 'story start'
@@ -65,8 +62,9 @@ module Wdr.Controllers
             context.targetId = targetId
             done('end')
 
+
       @log '入力を待っています...'
-      story = new Story @battle, @session
+      story = new Story
       story.ready().then (context) =>
         context.actorId = actorId
         done(context)

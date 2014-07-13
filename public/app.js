@@ -758,10 +758,9 @@ void function () {
             BattleController.prototype.waitUserInput = function (actorId) {
                 return new Promise(function (this$) {
                     return function (done) {
-                        var story;
-                        Story = function (super$1) {
-                            extends$(Story, super$1);
-                            Story.prototype.steps = {
+                        var Story, story;
+                        Story = Libretto.extend({
+                            steps: {
                                 start: 'waitSkillSelect',
                                 waitSkillSelect: [
                                     'waitTargetSelect',
@@ -771,58 +770,48 @@ void function () {
                                     'waitSkillSelect',
                                     'end'
                                 ]
-                            };
-                            function Story(param$, param$1) {
-                                var instance$;
-                                instance$ = this;
-                                this.waitTargetSelect = function (a) {
-                                    return Story.prototype.waitTargetSelect.apply(instance$, arguments);
+                            },
+                            waitSkillSelect: function (this$1) {
+                                return function (context) {
+                                    return new Promise(function (this$2) {
+                                        return function (done) {
+                                            console.log('story start');
+                                            this$2.battle.$data.inputState = 'skill-select';
+                                            return this$2.battle.$on('skill-selected', function (this$3) {
+                                                return function (skillId) {
+                                                    this$3.battle.$off('skill-selected');
+                                                    context.skillId = skillId;
+                                                    return done('waitTargetSelect');
+                                                };
+                                            }(this$2));
+                                        };
+                                    }(this$1));
                                 };
-                                this.waitSkillSelect = function (a) {
-                                    return Story.prototype.waitSkillSelect.apply(instance$, arguments);
+                            }(this$),
+                            waitTargetSelect: function (this$1) {
+                                return function (context) {
+                                    return new Promise(function (this$2) {
+                                        return function (done) {
+                                            this$2.battle.$data.inputState = 'target-select';
+                                            this$2.battle.$data.targets = this$2.session.enemies.map(function (e) {
+                                                return e.toJSON();
+                                            }).filter(function (e) {
+                                                return e.hp.current > 0;
+                                            });
+                                            return this$2.battle.$on('target-selected', function (this$3) {
+                                                return function (targetId) {
+                                                    this$3.battle.$off('target-selected');
+                                                    context.targetId = targetId;
+                                                    return done('end');
+                                                };
+                                            }(this$2));
+                                        };
+                                    }(this$1));
                                 };
-                                this.battle = param$;
-                                this.session = param$1;
-                                Story.__super__.constructor.apply(this, arguments);
-                            }
-                            Story.prototype.waitSkillSelect = function (context) {
-                                return new Promise(function (this$1) {
-                                    return function (done) {
-                                        console.log('story start');
-                                        this$1.battle.$data.inputState = 'skill-select';
-                                        return this$1.battle.$on('skill-selected', function (this$2) {
-                                            return function (skillId) {
-                                                this$2.battle.$off('skill-selected');
-                                                context.skillId = skillId;
-                                                return done('waitTargetSelect');
-                                            };
-                                        }(this$1));
-                                    };
-                                }(this));
-                            };
-                            Story.prototype.waitTargetSelect = function (context) {
-                                return new Promise(function (this$1) {
-                                    return function (done) {
-                                        this$1.battle.$data.inputState = 'target-select';
-                                        this$1.battle.$data.targets = this$1.session.enemies.map(function (e) {
-                                            return e.toJSON();
-                                        }).filter(function (e) {
-                                            return e.hp.current > 0;
-                                        });
-                                        return this$1.battle.$on('target-selected', function (this$2) {
-                                            return function (targetId) {
-                                                this$2.battle.$off('target-selected');
-                                                context.targetId = targetId;
-                                                return done('end');
-                                            };
-                                        }(this$1));
-                                    };
-                                }(this));
-                            };
-                            return Story;
-                        }(Libretto);
+                            }(this$)
+                        });
                         this$.log('\u5165\u529b\u3092\u5f85\u3063\u3066\u3044\u307e\u3059...');
-                        story = new Story(this$.battle, this$.session);
+                        story = new Story();
                         return story.ready().then(function (context) {
                             context.actorId = actorId;
                             return done(context);
