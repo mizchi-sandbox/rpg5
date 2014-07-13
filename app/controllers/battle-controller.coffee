@@ -23,7 +23,7 @@ module Wdr.Controllers
       setTimeout => # Avoid action before fixed
         @startGameLoop()
 
-    waitUserSelect: (actorId) -> new Promise (done) =>
+    waitUserInput: (actorId) -> new Promise (done) =>
       console.log 'now process are waiting for user input', actorId
       @log '入力を待っています...'
       @battle.$on 'skill-selected', (skillId, targetId = null) =>
@@ -45,9 +45,9 @@ module Wdr.Controllers
 
           when 'stopForUserInput'
             @battle.$data.onUserInput = true
-            @waitUserSelect(report.battlerId).then (userInput :: UserInput) =>
-              actor = @session.findBattlerById(userInput.actorId)
-              actor.wt.current = 1
+            @waitUserInput(report.battlerId).then (userInput :: UserInput) =>
+              @session.execAction userInput
+              @sync()
               @battle.$data.onUserInput = false
               done()
           else

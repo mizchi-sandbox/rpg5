@@ -207,7 +207,7 @@ _module_('Wdr.Services', function (Wdr, Services) {
                     id: 1
                 }),
                 new Wdr.Entities.Battle.Battler({
-                    name: 'bot1',
+                    name: 'bot',
                     lv: 3,
                     hp: 20,
                     wt: 30,
@@ -243,6 +243,28 @@ _module_('Wdr.Services', function (Wdr, Services) {
                 return battler.id === battlerId;
             });
         };
+        BattleSession.prototype.execAction = function (param$) {
+            var actor, actorId, cache$, skillId, target, targetId;
+            {
+                cache$ = param$;
+                actorId = cache$.actorId;
+                skillId = cache$.skillId;
+                targetId = cache$.targetId;
+            }
+            if (null != targetId)
+                targetId;
+            else
+                targetId = _.sample(this.enemies).id;
+            actor = this.findBattlerById(actorId);
+            if (skillId === 'attack') {
+                target = this.findBattlerById(targetId);
+                target.hp.current--;
+                console.log('attack');
+            } else if (skillId === 'defenece') {
+                console.log('defenece');
+            }
+            return actor.wt.current = 1;
+        };
         BattleSession.prototype.processTurn = function () {
             return new Promise(function (this$) {
                 return function (done) {
@@ -258,7 +280,6 @@ _module_('Wdr.Services', function (Wdr, Services) {
                                 log: '' + p.name + '\u306f\u5165\u529b\u3092\u5f85\u3063\u3066\u3044\u308b',
                                 battlerId: p.id
                             }));
-                            break;
                         } else {
                             p.wt.current = 1;
                             reports.push(new Wdr.ValueObjects.Report({
@@ -712,7 +733,7 @@ void function () {
                     };
                 }(this));
             };
-            BattleController.prototype.waitUserSelect = function (actorId) {
+            BattleController.prototype.waitUserInput = function (actorId) {
                 return new Promise(function (this$) {
                     return function (done) {
                         console.log('now process are waiting for user input', actorId);
@@ -752,11 +773,10 @@ void function () {
                                             return done();
                                         case 'stopForUserInput':
                                             this$2.battle.$data.onUserInput = true;
-                                            return this$2.waitUserSelect(report.battlerId).then(function (this$3) {
+                                            return this$2.waitUserInput(report.battlerId).then(function (this$3) {
                                                 return function (userInput) {
-                                                    var actor;
-                                                    actor = this$3.session.findBattlerById(userInput.actorId);
-                                                    actor.wt.current = 1;
+                                                    this$3.session.execAction(userInput);
+                                                    this$3.sync();
                                                     this$3.battle.$data.onUserInput = false;
                                                     return done();
                                                 };
