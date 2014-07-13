@@ -61,16 +61,13 @@ module Wdr.Controllers
             .map((e) -> e.toJSON())
             .filter((e) -> e.hp.current > 0)
 
-          @battle.$on 'target-selected', (targetId) =>
-            @battle.$off('back-to-skill-select')
-            @battle.$off('target-selected')
-            userInputContext.targetId = targetId
-            done('end')
+          @battle.$waitAnyOnce
+            'target-selected': (targetId) =>
+              userInputContext.targetId = targetId
+              done('end')
 
-          @battle.$on 'back-to-skill-select', =>
-            @battle.$off('back-to-skill-select')
-            @battle.$off('target-selected')
-            done('waitSkillSelect')
+            'back-to-skill-select': =>
+              done('waitSkillSelect')
 
       @log '入力を待っています...'
       new UserInputStory().ready().then (context) =>

@@ -14,3 +14,9 @@ module Wdr.UI.Components.Base
         @$off(eventName)
         @$on(eventName, callback)
 
+      $waitAnyOnce: (events) ->
+        cbs = {}
+        for eventName, fn of events then do (eventName, fn) =>
+          @$on eventName, cbs[eventName] = =>
+            @$off(k, v) for k, v of cbs
+            fn arguments...

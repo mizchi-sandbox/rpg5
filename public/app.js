@@ -423,6 +423,30 @@ _module_('Wdr.UI.Components.Base', function (Wdr, UI, Components, Base) {
             on: function (eventName, callback) {
                 this.$off(eventName);
                 return this.$on(eventName, callback);
+            },
+            $waitAnyOnce: function (events) {
+                var cbs, eventName, fn;
+                cbs = {};
+                return function (accum$) {
+                    for (eventName in events) {
+                        fn = events[eventName];
+                        accum$.push(function (this$) {
+                            return function (eventName, fn) {
+                                return this$.$on(eventName, cbs[eventName] = function (this$1) {
+                                    return function () {
+                                        var k, v;
+                                        for (k in cbs) {
+                                            v = cbs[k];
+                                            this$1.$off(k, v);
+                                        }
+                                        return fn.apply(null, [].slice.call(arguments));
+                                    };
+                                }(this$));
+                            };
+                        }(this)(eventName, fn));
+                    }
+                    return accum$;
+                }.call(this, []);
             }
         }
     });
@@ -801,21 +825,15 @@ void function () {
                                             }).filter(function (e) {
                                                 return e.hp.current > 0;
                                             });
-                                            this$2.battle.$on('target-selected', function (this$3) {
-                                                return function (targetId) {
-                                                    this$3.battle.$off('back-to-skill-select');
-                                                    this$3.battle.$off('target-selected');
+                                            return this$2.battle.$waitAnyOnce({
+                                                'target-selected': function (targetId) {
                                                     userInputContext.targetId = targetId;
                                                     return done('end');
-                                                };
-                                            }(this$2));
-                                            return this$2.battle.$on('back-to-skill-select', function (this$3) {
-                                                return function () {
-                                                    this$3.battle.$off('back-to-skill-select');
-                                                    this$3.battle.$off('target-selected');
+                                                },
+                                                'back-to-skill-select': function () {
                                                     return done('waitSkillSelect');
-                                                };
-                                            }(this$2));
+                                                }
+                                            });
                                         };
                                     }(this$1));
                                 };
