@@ -16,13 +16,6 @@ gulp.task 'vendor', ->
     .pipe concat('vendor.js')
     .pipe gulp.dest('./public')
 
-# gulp.task 'css', ->
-  # gulp
-    # .src './app/ui/styles/*.scss'
-    # .pipe plumber()
-    # .pipe sass()
-    # .pipe gulp.dest './public'
-
 gulp.task 'css', ->
    gulp
     .src './app/ui/styles/*.sass'

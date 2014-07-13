@@ -36,20 +36,40 @@ module Wdr.Controllers
 
     # waitUserInput :: String -> Promise<Any>
     waitUserInput: (actorId) -> new Promise (done) =>
+      class Story extends Libretto
+        steps:
+          'start': 'waitSkillSelect'
+          'waitSkillSelect': ['waitTargetSelect', 'end']
+          'waitTargetSelect': ['waitSkillSelect', 'end']
+
+        constructor: (@battle, @session) ->
+          super
+
+        waitSkillSelect: (context) => new Promise (done) =>
+          console.log 'story start'
+          @battle.$data.inputState = 'skill-select'
+          @battle.$on 'skill-selected', (skillId) =>
+            @battle.$off('skill-selected')
+            context.skillId = skillId
+            done('waitTargetSelect')
+
+        waitTargetSelect: (context) => new Promise (done) =>
+          @battle.$data.inputState = 'target-select'
+          @battle.$data.targets =
+            @session.enemies
+            .map((e) -> e.toJSON())
+            .filter((e) -> e.hp.current > 0)
+
+          @battle.$on 'target-selected', (targetId) =>
+            @battle.$off('target-selected')
+            context.targetId = targetId
+            done('end')
+
       @log '入力を待っています...'
-      @battle.$data.inputState = 'skill-select'
-      @battle.$on 'skill-selected', (skillId) =>
-        @battle.$off('skill-selected')
-
-        @battle.$data.inputState = 'target-select'
-        @battle.$data.targets =
-          @session.enemies
-          .map((e) -> e.toJSON())
-          .filter((e) -> e.hp.current > 0)
-
-        @battle.$on 'target-selected', (targetId) =>
-          @battle.$off 'target-selected'
-          done({actorId, skillId, targetId})
+      story = new Story @battle, @session
+      story.ready().then (context) =>
+        context.actorId = actorId
+        done(context)
 
     # log :: String -> ()
     log: (message) ->
