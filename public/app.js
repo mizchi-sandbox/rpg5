@@ -449,7 +449,7 @@ function in$(member, list) {
     return false;
 }
 void function () {
-    var Battler, Component, Skill;
+    var Battler, Component, Skill, Target;
     Component = Wdr.UI.Components.Base.Component;
     Skill = Component.extend({
         template: '<button v-on=\'click: onClick(this)\'>{{name}}</span>',
@@ -460,13 +460,22 @@ void function () {
         }
     });
     Battler = Component.extend({ template: '<div>\n  lv.{{lv}} : {{name}}\n  HP: {{hp.current}}/{{hp.max}}\n  wt: {{wt.current}}/{{wt.max}}\n</div>' });
+    Target = Component.extend({
+        template: '<button v-on=\'click: onClick(this)\'>{{name}}</span>\n<span>HP: {{hp.current}}/{{hp.max}}</span>',
+        methods: {
+            onClick: function () {
+                return this.$dispatch('target-selected', this.$data.id);
+            }
+        }
+    });
     _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
         this.Battle = Component.extend({
             components: {
                 battler: Battler,
-                skill: Skill
+                skill: Skill,
+                target: Target
             },
-            template: '<h2>Players</h2>\n\n<ul class=\'players\'>\n  <li v-repeat=\'players\' v-component=\'battler\'></li>\n</ul>\n\n<h2>Enemies</h2>\n\n<ul class=\'enemies\'>\n  <li v-repeat=\'enemies\' v-component=\'battler\'></li>\n</ul>\n\n\n<div v-show=\'onUserInput\'>\n  <h2>SkillSelector</h2>\n  <ul class=\'skills\'>\n    <li v-repeat=\'skills\' v-component=\'skill\'></li>\n  </ul>\n</div>\n\n<h2>Log</h2>\n<ul class=\'logs\'>\n  <li v-repeat=\'log\'>\n    {{message}}\n  </li>\n</ul>'
+            template: '<h2>Players</h2>\n\n<ul class=\'players\'>\n  <li v-repeat=\'players\' v-component=\'battler\'></li>\n</ul>\n\n<h2>Enemies</h2>\n\n<ul class=\'enemies\'>\n  <li v-repeat=\'enemies\' v-component=\'battler\'></li>\n</ul>\n\n<div v-show=\'onUserInput\'>\n  <div v-show=\'inputState == "skill-select"\'>\n    <h2>SkillSelector</h2>\n    <ul class=\'skills\'>\n      <li v-repeat=\'skills\' v-component=\'skill\'></li>\n    </ul>\n  </div>\n\n  <div v-show=\'inputState == "target-select"\'>\n    <h2>TargetSelector</h2>\n    <ul class=\'targets\'>\n      <li v-repeat=\'targets\' v-component=\'target\'></li>\n    </ul>\n  </div>\n</div>\n\n<h2>Log</h2>\n<ul class=\'logs\'>\n  <li v-repeat=\'log\'>\n    {{message}}\n  </li>\n</ul>'
         });
     });
     function isOwn$(o, p) {
@@ -702,8 +711,10 @@ void function () {
     var Battle, Controller;
     Controller = Wdr.Controllers.Base.Controller;
     Battle = Wdr.UI.Components.Battle;
-    0;
     _module_('Wdr.Controllers', function (Wdr, Controllers) {
+        0;
+        0;
+        0;
         this.BattleController = function (super$) {
             extends$(BattleController, super$);
             function BattleController() {
@@ -747,18 +758,27 @@ void function () {
             BattleController.prototype.waitUserInput = function (actorId) {
                 return new Promise(function (this$) {
                     return function (done) {
-                        console.log('now process are waiting for user input', actorId);
                         this$.log('\u5165\u529b\u3092\u5f85\u3063\u3066\u3044\u307e\u3059...');
+                        this$.battle.$data.inputState = 'skill-select';
                         return this$.battle.$on('skill-selected', function (this$1) {
-                            return function (skillId, targetId) {
-                                if (null == targetId)
-                                    targetId = null;
+                            return function (skillId) {
                                 this$1.battle.$off('skill-selected');
-                                return done({
-                                    actorId: actorId,
-                                    skillId: skillId,
-                                    targetId: targetId
+                                this$1.battle.$data.inputState = 'target-select';
+                                this$1.battle.$data.targets = this$1.session.enemies.map(function (e) {
+                                    return e.toJSON();
+                                }).filter(function (e) {
+                                    return e.hp.current > 0;
                                 });
+                                return this$1.battle.$on('target-selected', function (this$2) {
+                                    return function (targetId) {
+                                        this$2.battle.$off('target-selected');
+                                        return done({
+                                            actorId: actorId,
+                                            skillId: skillId,
+                                            targetId: targetId
+                                        });
+                                    };
+                                }(this$1));
                             };
                         }(this$));
                     };

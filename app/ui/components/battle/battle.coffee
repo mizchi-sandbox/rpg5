@@ -1,5 +1,8 @@
 Component = Wdr.UI.Components.Base.Component
 
+# struct Battle.Skill
+#   name :: String
+
 Skill = Component.extend
   template:'''
     <button v-on='click: onClick(this)'>{{name}}</span>
@@ -7,6 +10,16 @@ Skill = Component.extend
   methods:
     onClick: ->
       @$dispatch 'skill-selected', @$data.skillId
+
+# struct Battle.Battler
+#   lv :: Int
+#   name :: String
+#   hp ::
+#     current :: Int
+#     max :: Int
+#   wt ::
+#     current :: Int
+#     max :: Int
 
 Battler = Component.extend
   template:'''
@@ -17,11 +30,31 @@ Battler = Component.extend
     </div>
   '''
 
+# struct Battle.Target
+#   lv :: Int
+#   id :: String
+#   name :: String
+#   hp ::
+#     current :: Int
+#     max :: Int
+#   wt ::
+#     current :: Int
+#     max :: Int
+Target = Component.extend
+  template:'''
+    <button v-on='click: onClick(this)'>{{name}}</span>
+    <span>HP: {{hp.current}}/{{hp.max}}</span>
+  '''
+  methods:
+    onClick: ->
+      @$dispatch 'target-selected', @$data.id
+
 module Wdr.UI.Components
   @Battle = Component.extend
     components:
       battler: Battler
       skill: Skill
+      target: Target
     template: '''
     <h2>Players</h2>
 
@@ -35,12 +68,20 @@ module Wdr.UI.Components
       <li v-repeat='enemies' v-component='battler'></li>
     </ul>
 
-
     <div v-show='onUserInput'>
-      <h2>SkillSelector</h2>
-      <ul class='skills'>
-        <li v-repeat='skills' v-component='skill'></li>
-      </ul>
+      <div v-show='inputState == "skill-select"'>
+        <h2>SkillSelector</h2>
+        <ul class='skills'>
+          <li v-repeat='skills' v-component='skill'></li>
+        </ul>
+      </div>
+
+      <div v-show='inputState == "target-select"'>
+        <h2>TargetSelector</h2>
+        <ul class='targets'>
+          <li v-repeat='targets' v-component='target'></li>
+        </ul>
+      </div>
     </div>
 
     <h2>Log</h2>
