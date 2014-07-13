@@ -36,21 +36,25 @@ module Wdr.Controllers
 
     # waitUserInput :: String -> Promise<Any>
     waitUserInput: (actorId) -> new Promise (done) =>
-      Story = Libretto.extend
+      UserInputStory = Libretto.extend
         steps:
           'start': 'waitSkillSelect'
           'waitSkillSelect': ['waitTargetSelect', 'end']
           'waitTargetSelect': ['waitSkillSelect', 'end']
 
-        waitSkillSelect: (context) => new Promise (done) =>
-          console.log 'story start'
+        waitSkillSelect: (userInputContext) => new Promise (done) =>
           @battle.$data.inputState = 'skill-select'
           @battle.$on 'skill-selected', (skillId) =>
             @battle.$off('skill-selected')
-            context.skillId = skillId
-            done('waitTargetSelect')
+            userInputContext.skillId = skillId
 
-        waitTargetSelect: (context) => new Promise (done) =>
+            # TODO: skill
+            if skillId is 'defenece'
+              done('end')
+            else
+              done('waitTargetSelect')
+
+        waitTargetSelect: (userInputContext) => new Promise (done) =>
           @battle.$data.inputState = 'target-select'
           @battle.$data.targets =
             @session.enemies
@@ -58,14 +62,18 @@ module Wdr.Controllers
             .filter((e) -> e.hp.current > 0)
 
           @battle.$on 'target-selected', (targetId) =>
+            @battle.$off('back-to-skill-select')
             @battle.$off('target-selected')
-            context.targetId = targetId
+            userInputContext.targetId = targetId
             done('end')
 
+          @battle.$on 'back-to-skill-select', =>
+            @battle.$off('back-to-skill-select')
+            @battle.$off('target-selected')
+            done('waitSkillSelect')
 
       @log '入力を待っています...'
-      story = new Story
-      story.ready().then (context) =>
+      new UserInputStory().ready().then (context) =>
         context.actorId = actorId
         done(context)
 

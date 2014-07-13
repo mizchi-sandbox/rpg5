@@ -49,6 +49,9 @@ Target = Component.extend
     onClick: ->
       @$dispatch 'target-selected', @$data.id
 
+# Dispatchable Events
+#   target-selected
+#   skill-selected
 module Wdr.UI.Components
   @Battle = Component.extend
     components:
@@ -80,6 +83,9 @@ module Wdr.UI.Components
         <h2>TargetSelector</h2>
         <ul class='targets'>
           <li v-repeat='targets' v-component='target'></li>
+          <li>
+            <button v-dispatcher='back-to-skill-select'>戻る</button>
+          </li>
         </ul>
       </div>
     </div>
