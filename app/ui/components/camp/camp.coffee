@@ -13,6 +13,8 @@ module Wdr.UI.Components.Camp
     </div>
 
     <a href='dungeon-select'>ダンジョンへ</a>
+    <a href=''>ログアウト</a>
+
     <button v-dispatcher='debug-add-gold'>add coin</button>
     <button v-dispatcher='save'>save</button>
     '''

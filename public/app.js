@@ -495,7 +495,7 @@ void function () {
     var Component;
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components.Camp', function (Wdr, UI, Components, Camp) {
-        this.Camp = Component.extend({ template: '<h1>Camp</h1>\n<div>\n  name: {{playerName}}\n</div>\n\n<div>\n  gold: {{gold}}\n</div>\n\n<a href=\'dungeon-select\'>\u30c0\u30f3\u30b8\u30e7\u30f3\u3078</a>\n<button v-dispatcher=\'debug-add-gold\'>add coin</button>\n<button v-dispatcher=\'save\'>save</button>' });
+        this.Camp = Component.extend({ template: '<h1>Camp</h1>\n<div>\n  name: {{playerName}}\n</div>\n\n<div>\n  gold: {{gold}}\n</div>\n\n<a href=\'dungeon-select\'>\u30c0\u30f3\u30b8\u30e7\u30f3\u3078</a>\n<a href=\'\'>\u30ed\u30b0\u30a2\u30a6\u30c8</a>\n\n<button v-dispatcher=\'debug-add-gold\'>add coin</button>\n<button v-dispatcher=\'save\'>save</button>' });
     });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
@@ -622,7 +622,17 @@ void function () {
     var Component;
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components.Layout', function (Wdr, UI, Components, Layout) {
-        this.Layout = Component.extend({ template: '<header>\n  <a href=\'/\'>Home</a>\n  <a href=\'/camp\'>Camp</a>\n</header>\n<div id=\'scene-root\'></div>' });
+        this.Layout = Component.extend({
+            template: '<header v-show=\'showHeader\'>\n  <a href=\'/camp\'>Camp</a>\n  <button v-on=\'click: clearStorages\'>\u521d\u671f\u5316</button>\n</header>\n<div id=\'scene-root\'></div>',
+            methods: {
+                clearStorages: function () {
+                    return localforage.clear().then(function () {
+                        Warden.navigate('/');
+                        return window.location.reload();
+                    });
+                }
+            }
+        });
     });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
@@ -657,7 +667,8 @@ void function () {
             }
             Controller.prototype.beforeAction = function () {
                 this.layout = this.reuse(Layout);
-                return this.layout.$appendTo('body');
+                this.layout.$appendTo('body');
+                return this.layout.$data.showHeader = true;
             };
             return Controller;
         }(Warden.Controller);
@@ -1004,6 +1015,7 @@ void function () {
                 return new Promise(function (this$) {
                     return function (done) {
                         var entry;
+                        this$.layout.$data.showHeader = false;
                         delete localStorage.currentPlayerId;
                         entry = this$.reuse(Entry);
                         Wdr.Storages.SaveObject.find().then(function (saveObjects) {
