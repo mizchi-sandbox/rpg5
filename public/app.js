@@ -2,6 +2,17 @@ var _include_,_module_;_module_=function(e){return function(t,n,r){var i,s,o,u,a
 _module_('_', function (_) {
     0;
 });
+_module_('Wdr.Utils', function (Wdr, Utils) {
+    this.template = function (str, obj) {
+        if (null == obj)
+            obj = {};
+        return jade.compile(str)(obj);
+    };
+});
+window._t = Wdr.Utils.template;
+window._p = function (fullfill, fail) {
+    return new Promise(fullfill, fail);
+};
 _module_('Wdr.ValueObjects', function (Wdr, ValueObjects) {
     this.Report = function () {
         0;
@@ -476,16 +487,16 @@ void function () {
     var Battler, Component, Skill, Target;
     Component = Wdr.UI.Components.Base.Component;
     Skill = Component.extend({
-        template: '<button v-on=\'click: onClick(this)\'>{{name}}</span>',
+        template: _t('button(v-on=\'click: onClick(this)\') {{name}}'),
         methods: {
             onClick: function () {
                 return this.$dispatch('skill-selected', this.$data.skillId);
             }
         }
     });
-    Battler = Component.extend({ template: '<div>\n  lv.{{lv}} : {{name}}\n  HP: {{hp.current}}/{{hp.max}}\n  wt: {{wt.current}}/{{wt.max}}\n</div>' });
+    Battler = Component.extend({ template: _t('div\n  | lv.{{lv}} : {{name}}\n  | HP: {{hp.current}}/{{hp.max}}\n  | wt: {{wt.current}}/{{wt.max}}') });
     Target = Component.extend({
-        template: '<button v-on=\'click: onClick(this)\'>{{name}}</span>\n<span>HP: {{hp.current}}/{{hp.max}}</span>',
+        template: _t('button(v-on=\'click: onClick(this)\') {{name}}\n| HP: {{hp.current}}/{{hp.max}}'),
         methods: {
             onClick: function () {
                 return this.$dispatch('target-selected', this.$data.id);
@@ -499,7 +510,7 @@ void function () {
                 skill: Skill,
                 target: Target
             },
-            template: '<h2>Players</h2>\n\n<ul class=\'players\'>\n  <li v-repeat=\'players\' v-component=\'battler\'></li>\n</ul>\n\n<h2>Enemies</h2>\n\n<ul class=\'enemies\'>\n  <li v-repeat=\'enemies\' v-component=\'battler\'></li>\n</ul>\n\n<div v-show=\'onUserInput\'>\n  <div v-show=\'inputState == "skill-select"\'>\n    <h2>SkillSelector</h2>\n    <ul class=\'skills\'>\n      <li v-repeat=\'skills\' v-component=\'skill\'></li>\n    </ul>\n  </div>\n\n  <div v-show=\'inputState == "target-select"\'>\n    <h2>TargetSelector</h2>\n    <ul class=\'targets\'>\n      <li v-repeat=\'targets\' v-component=\'target\'></li>\n      <li>\n        <button v-dispatcher=\'back-to-skill-select\'>\u623b\u308b</button>\n      </li>\n    </ul>\n  </div>\n</div>\n\n<h2>Log</h2>\n<ul class=\'logs\'>\n  <li v-repeat=\'log\'>\n    {{message}}\n  </li>\n</ul>'
+            template: _t('\nh3 Players\nul.players\n  li(v-repeat=\'players\' v-component=\'battler\')\n\nh3 Enemies\nul.enemies\n  li(v-repeat=\'enemies\' v-component=\'battler\')\n\ndiv(v-show=\'onUserInput\')\n  div(v-show=\'inputState == "skill-select"\')\n    h3 SkillSelector\n    ul.skills\n      li(v-repeat=\'skills\' v-component=\'skill\')\n\n  div(v-show=\'inputState == "target-select"\')\n    h3 TargetSelector\n    ul.targets\n      li(v-repeat=\'targets\' v-component=\'target\')\n      li\n        button(v-dispatcher=\'back-to-skill-select\') \u623b\u308b\n\nh3 Log\nul.logs\n  li(v-repeat=\'log\')\n    {{message}}')
         });
     });
     function isOwn$(o, p) {

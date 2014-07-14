@@ -20,9 +20,7 @@ initializeStorages = -> new Promise (done) ->
 restoreLastSession = -> new Promise (done) ->
   Wdr.Storages.SaveObject.findOne(id: localStorage.currentPlayerId).then (saveObject :: Wdr.Storages.SaveObject) =>
     wdr.currentSession = Wdr.Application.createPlaySession(saveObject)
-    # Warden.navigate('camp')
     done()
-    # startRouter()
 
 startRouter = ->
   Warden.replaceLinksToHashChange()

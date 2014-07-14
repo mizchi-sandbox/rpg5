@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 tcoffee -c \
   app/typings/**/*.coffee \
+  app/utils.coffee \
   app/value-objects/**/*.coffee \
   app/entities/**/*.coffee \
   app/services/**/*.coffee \

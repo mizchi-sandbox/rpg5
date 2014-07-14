@@ -2,10 +2,9 @@ Component = Wdr.UI.Components.Base.Component
 
 # struct Battle.Skill
 #   name :: String
-
 Skill = Component.extend
-  template:'''
-    <button v-on='click: onClick(this)'>{{name}}</span>
+  template: _t '''
+    button(v-on='click: onClick(this)') {{name}}
   '''
   methods:
     onClick: ->
@@ -22,12 +21,11 @@ Skill = Component.extend
 #     max :: Int
 
 Battler = Component.extend
-  template:'''
-    <div>
-      lv.{{lv}} : {{name}}
-      HP: {{hp.current}}/{{hp.max}}
-      wt: {{wt.current}}/{{wt.max}}
-    </div>
+  template: _t '''
+    div
+      | lv.{{lv}} : {{name}}
+      | HP: {{hp.current}}/{{hp.max}}
+      | wt: {{wt.current}}/{{wt.max}}
   '''
 
 # struct Battle.Target
@@ -41,9 +39,9 @@ Battler = Component.extend
 #     current :: Int
 #     max :: Int
 Target = Component.extend
-  template:'''
-    <button v-on='click: onClick(this)'>{{name}}</span>
-    <span>HP: {{hp.current}}/{{hp.max}}</span>
+  template: _t '''
+    button(v-on='click: onClick(this)') {{name}}
+    | HP: {{hp.current}}/{{hp.max}}
   '''
   methods:
     onClick: ->
@@ -58,42 +56,31 @@ module Wdr.UI.Components
       battler: Battler
       skill: Skill
       target: Target
-    template: '''
-    <h2>Players</h2>
+    template: _t '''
 
-    <ul class='players'>
-      <li v-repeat='players' v-component='battler'></li>
-    </ul>
+    h3 Players
+    ul.players
+      li(v-repeat='players' v-component='battler')
 
-    <h2>Enemies</h2>
+    h3 Enemies
+    ul.enemies
+      li(v-repeat='enemies' v-component='battler')
 
-    <ul class='enemies'>
-      <li v-repeat='enemies' v-component='battler'></li>
-    </ul>
+    div(v-show='onUserInput')
+      div(v-show='inputState == "skill-select"')
+        h3 SkillSelector
+        ul.skills
+          li(v-repeat='skills' v-component='skill')
 
-    <div v-show='onUserInput'>
-      <div v-show='inputState == "skill-select"'>
-        <h2>SkillSelector</h2>
-        <ul class='skills'>
-          <li v-repeat='skills' v-component='skill'></li>
-        </ul>
-      </div>
+      div(v-show='inputState == "target-select"')
+        h3 TargetSelector
+        ul.targets
+          li(v-repeat='targets' v-component='target')
+          li
+            button(v-dispatcher='back-to-skill-select') 戻る
 
-      <div v-show='inputState == "target-select"'>
-        <h2>TargetSelector</h2>
-        <ul class='targets'>
-          <li v-repeat='targets' v-component='target'></li>
-          <li>
-            <button v-dispatcher='back-to-skill-select'>戻る</button>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <h2>Log</h2>
-    <ul class='logs'>
-      <li v-repeat='log'>
+    h3 Log
+    ul.logs
+      li(v-repeat='log')
         {{message}}
-      </li>
-    </ul>
     '''
