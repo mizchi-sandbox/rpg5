@@ -20,17 +20,13 @@ module Wdr.Controllers
 
   class @BattleController extends Controller
     index: ->
-      @battle = battle = @reuse Battle
-      @battle.$appendTo '#scene-root'
+      @vm = battle = @reuse Battle
+      @vm.$appendTo '#scene-root'
       @session = new Wdr.Services.BattleSession
 
-      @battle.$data = @session.toJSON()
-      @battle.$data.log = [message: '開始']
-      @battle.$data.onUserInput = false
-      @battle.$data.skills = [
-        {name: '攻撃', skillId:'attack'}
-        {name: '防御', skillId:'defenece'}
-      ]
+      @vm.$data = @session.toJSON()
+      @vm.$data.log = [message: '開始']
+      @vm.$data.onUserInput = false
       setTimeout => # Avoid action before fixed
         @startGameLoop()
 
@@ -43,25 +39,34 @@ module Wdr.Controllers
           'waitTargetSelect': ['waitSkillSelect', 'end']
 
         waitSkillSelect: (userInputContext) => new Promise (done) =>
-          @battle.$data.inputState = 'skill-select'
-          @battle.$on 'skill-selected', (skillId) =>
-            @battle.$off('skill-selected')
-            userInputContext.skillId = skillId
+          @vm.$data.inputState = 'skill-select'
+          getSkills = -> [
+            {name: '攻撃', skillId:'attack', targetType: 'single'}
+            {name: '防御', skillId:'defenece', targetType: 'none'}
+          ]
+          @vm.$data.skills = getSkills()
 
-            # TODO: skill
-            if skillId is 'defenece'
-              done('end')
-            else
-              done('waitTargetSelect')
+          @vm.$on 'skill-selected', (skillId) =>
+            @vm.$off('skill-selected')
+
+            skills = getSkills()
+            skill = _.find skills, {skillId}
+            userInputContext.skillId = skill.skillId
+
+            switch skill.targetType
+              when 'single'
+                done('waitTargetSelect')
+              when 'none'
+                done('end')
 
         waitTargetSelect: (userInputContext) => new Promise (done) =>
-          @battle.$data.inputState = 'target-select'
-          @battle.$data.targets =
+          @vm.$data.inputState = 'target-select'
+          @vm.$data.targets =
             @session.enemies
             .map((e) -> e.toJSON())
             .filter((e) -> e.hp.current > 0)
 
-          @battle.$waitAnyOnce
+          @vm.$waitAnyOnce
             'target-selected': (targetId) =>
               userInputContext.targetId = targetId
               done('end')
@@ -77,9 +82,9 @@ module Wdr.Controllers
     # log :: String -> ()
     log: (message) ->
       console.log message
-      @battle.$data.log.unshift message: message
-      if @battle.$data.log.length > 5
-        @battle.$data.log.pop()
+      @vm.$data.log.unshift message: message
+      if @vm.$data.log.length > 5
+        @vm.$data.log.pop()
 
     # processReport :: Promise<Any> * Report -> ()
     processReport: (p, report) => new Promise (done) => p.then =>
@@ -90,11 +95,11 @@ module Wdr.Controllers
             done()
 
           when 'stopForUserInput'
-            @battle.$data.onUserInput = true
+            @vm.$data.onUserInput = true
             @waitUserInput(report.battlerId).then (userInput :: UserInput) =>
               @session.execAction userInput
               @sync()
-              @battle.$data.onUserInput = false
+              @vm.$data.onUserInput = false
               done()
           else
             throw 'unknown event type:'+report.eventType
@@ -102,7 +107,7 @@ module Wdr.Controllers
 
     # sync :: () -> ()
     sync: =>
-      for battlerVM in [].concat @battle.$data.players, @battle.$data.enemies
+      for battlerVM in [].concat @vm.$data.players, @vm.$data.enemies
         battler = @session.findBattlerById(battlerVM.id)
         battlerVM.wt.current = battler.wt.current
         battlerVM.hp.current = battler.hp.current

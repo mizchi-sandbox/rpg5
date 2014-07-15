@@ -6,7 +6,7 @@ module Wdr.UI.Components.Entry
       h1 '冒険を始める'
       ul ->
         li 'v-repeat':'saveObjects', ->
-          '{{name}} / gold: {{gold}}'
+          text '{{name}} / gold: {{gold}}'
           button 'v-on': 'click:selectGame(this)', -> 'はじめる'
 
     methods:
