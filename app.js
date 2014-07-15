@@ -522,14 +522,13 @@ void function () {
         }
     });
     _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
-        var template;
         this.Battle = Component.extend({
             components: {
                 battler: Battler,
                 skill: Skill,
                 target: Target
             },
-            template: _cc(template = function () {
+            template: _cc(function () {
                 h3('Players');
                 ul({ 'class': 'players' }, function () {
                     return li({
@@ -577,7 +576,6 @@ void function () {
                 });
             })
         });
-        console.log(_cc(template));
     });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
@@ -605,7 +603,21 @@ void function () {
     var Component;
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components.Camp', function (Wdr, UI, Components, Camp) {
-        this.Camp = Component.extend({ template: '<h1>Camp</h1>\n<div>\n  name: {{playerName}}\n</div>\n\n<div>\n  gold: {{gold}}\n</div>\n\n<a href=\'dungeon-select\'>\u30c0\u30f3\u30b8\u30e7\u30f3\u3078</a>\n<a href=\'\'>\u30ed\u30b0\u30a2\u30a6\u30c8</a>\n\n<button v-dispatcher=\'debug-add-gold\'>add coin</button>\n<button v-dispatcher=\'save\'>save</button>' });
+        this.Camp = Component.extend({
+            template: _cc(function () {
+                h1('Camp');
+                text('name: {{playerName}}');
+                div('gold: {{gold}}');
+                a({ href: 'dungeon-select' }, function () {
+                    return '\u30c0\u30f3\u30b8\u30e7\u30f3\u3078';
+                });
+                a({ href: '' }, '\u30ed\u30b0\u30a2\u30a6\u30c8');
+                button({ 'v-dispatcher': 'debug-add-gold' }, function () {
+                    return 'add coin';
+                });
+                return button({ 'v-dispatcher': 'save' }, 'save');
+            })
+        });
     });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
@@ -634,7 +646,13 @@ void function () {
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
         this.DungeonSelect = Component.extend({
-            template: '<ul>\n  <li v-repeat=\'dungeons\'>\n    <a href=\'/dungeons/{{href}}\'>\n      {{name}}\n    </a>\n  </li>\n</ul>',
+            template: _cc(function () {
+                return ul(function () {
+                    return li({ 'v-repeat': 'dungeons' }, function () {
+                        return a({ href: 'dungeons/{{href}}' }, '{{name}}');
+                    });
+                });
+            }),
             data: {
                 dungeons: [{
                         name: '\u30c1\u30e5\u30fc\u30c8\u30ea\u30a2\u30eb\u30b9\u30c6\u30fc\u30b8',
@@ -669,7 +687,13 @@ void function () {
     var Component;
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
-        this.Dungeon = Component.extend({ template: '<h1>\u30c0\u30f3\u30b8\u30e7\u30f3: {{name}}</h1>\n<button v-dispatcher=\'search\'>\u63a2\u3059</button>\n<button v-dispatcher=\'start-battle\'>\u6226\u95d8</button>' });
+        this.Dungeon = Component.extend({
+            template: _cc(function () {
+                h1('\u30c0\u30f3\u30b8\u30e7\u30f3: {{name}}');
+                button({ 'v-dispatcher': 'search' }, '\u63a2\u3059');
+                return button({ 'v-dispatcher': 'start-battle' }, '\u6226\u95d8');
+            })
+        });
     });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
@@ -698,7 +722,17 @@ void function () {
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components.Entry', function (Wdr, UI, Components, Entry) {
         this.Entry = Component.extend({
-            template: '<h1>\u5192\u967a\u3092\u59cb\u3081\u308b</h1>\n<ul>\n  <li v-repeat=\'saveObjects\'>\n    {{name}} / gold: {{gold}}\n    <button v-on=\'click:selectGame(this)\'>\u306f\u3058\u3081\u308b</button>\n  </li>\n</ul>',
+            template: _cc(function () {
+                h1('\u5192\u967a\u3092\u59cb\u3081\u308b');
+                return ul(function () {
+                    return li({ 'v-repeat': 'saveObjects' }, function () {
+                        '{{name}} / gold: {{gold}}';
+                        return button({ 'v-on': 'click:selectGame(this)' }, function () {
+                            return '\u306f\u3058\u3081\u308b';
+                        });
+                    });
+                });
+            }),
             methods: {
                 selectGame: function (saveObject) {
                     return this.$dispatch('game-selected', saveObject);
@@ -733,7 +767,13 @@ void function () {
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components.Layout', function (Wdr, UI, Components, Layout) {
         this.Layout = Component.extend({
-            template: '<header v-show=\'showHeader\'>\n  <a href=\'/camp\'>Camp</a>\n  <button v-on=\'click: clearStorages\'>\u521d\u671f\u5316</button>\n</header>\n<div id=\'scene-root\'></div>',
+            template: _cc(function () {
+                header({ 'v-show': 'showHeader' }, function () {
+                    a({ href: '/camp' }, 'Camp');
+                    return button({ 'v-on': 'click: clearStorages' }, '\u521d\u671f\u5316');
+                });
+                return div({ id: 'scene-root' });
+            }),
             methods: {
                 clearStorages: function () {
                     return localforage.clear().then(function () {
