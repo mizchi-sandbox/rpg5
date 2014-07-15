@@ -726,7 +726,7 @@ void function () {
                 h1('\u5192\u967a\u3092\u59cb\u3081\u308b');
                 return ul(function () {
                     return li({ 'v-repeat': 'saveObjects' }, function () {
-                        '{{name}} / gold: {{gold}}';
+                        text('{{name}} / gold: {{gold}}');
                         return button({ 'v-on': 'click:selectGame(this)' }, function () {
                             return '\u306f\u3058\u3081\u308b';
                         });
@@ -874,22 +874,12 @@ void function () {
             }
             BattleController.prototype.index = function () {
                 var battle;
-                this.battle = battle = this.reuse(Battle);
-                this.battle.$appendTo('#scene-root');
+                this.vm = battle = this.reuse(Battle);
+                this.vm.$appendTo('#scene-root');
                 this.session = new Wdr.Services.BattleSession();
-                this.battle.$data = this.session.toJSON();
-                this.battle.$data.log = [{ message: '\u958b\u59cb' }];
-                this.battle.$data.onUserInput = false;
-                this.battle.$data.skills = [
-                    {
-                        name: '\u653b\u6483',
-                        skillId: 'attack'
-                    },
-                    {
-                        name: '\u9632\u5fa1',
-                        skillId: 'defenece'
-                    }
-                ];
+                this.vm.$data = this.session.toJSON();
+                this.vm.$data.log = [{ message: '\u958b\u59cb' }];
+                this.vm.$data.onUserInput = false;
                 return setTimeout(function (this$) {
                     return function () {
                         return this$.startGameLoop();
@@ -916,15 +906,35 @@ void function () {
                                 return function (userInputContext) {
                                     return new Promise(function (this$2) {
                                         return function (done) {
-                                            this$2.battle.$data.inputState = 'skill-select';
-                                            return this$2.battle.$on('skill-selected', function (this$3) {
+                                            var getSkills;
+                                            this$2.vm.$data.inputState = 'skill-select';
+                                            getSkills = function () {
+                                                return [
+                                                    {
+                                                        name: '\u653b\u6483',
+                                                        skillId: 'attack',
+                                                        targetType: 'single'
+                                                    },
+                                                    {
+                                                        name: '\u9632\u5fa1',
+                                                        skillId: 'defenece',
+                                                        targetType: 'none'
+                                                    }
+                                                ];
+                                            };
+                                            this$2.vm.$data.skills = getSkills();
+                                            return this$2.vm.$on('skill-selected', function (this$3) {
                                                 return function (skillId) {
-                                                    this$3.battle.$off('skill-selected');
-                                                    userInputContext.skillId = skillId;
-                                                    if (skillId === 'defenece') {
-                                                        return done('end');
-                                                    } else {
+                                                    var skill, skills;
+                                                    this$3.vm.$off('skill-selected');
+                                                    skills = getSkills();
+                                                    skill = _.find(skills, { skillId: skillId });
+                                                    userInputContext.skillId = skill.skillId;
+                                                    switch (skill.targetType) {
+                                                    case 'single':
                                                         return done('waitTargetSelect');
+                                                    case 'none':
+                                                        return done('end');
                                                     }
                                                 };
                                             }(this$2));
@@ -936,13 +946,13 @@ void function () {
                                 return function (userInputContext) {
                                     return new Promise(function (this$2) {
                                         return function (done) {
-                                            this$2.battle.$data.inputState = 'target-select';
-                                            this$2.battle.$data.targets = this$2.session.enemies.map(function (e) {
+                                            this$2.vm.$data.inputState = 'target-select';
+                                            this$2.vm.$data.targets = this$2.session.enemies.map(function (e) {
                                                 return e.toJSON();
                                             }).filter(function (e) {
                                                 return e.hp.current > 0;
                                             });
-                                            return this$2.battle.$waitAnyOnce({
+                                            return this$2.vm.$waitAnyOnce({
                                                 'target-selected': function (targetId) {
                                                     userInputContext.targetId = targetId;
                                                     return done('end');
@@ -966,9 +976,9 @@ void function () {
             };
             BattleController.prototype.log = function (message) {
                 console.log(message);
-                this.battle.$data.log.unshift({ message: message });
-                if (this.battle.$data.log.length > 5)
-                    return this.battle.$data.log.pop();
+                this.vm.$data.log.unshift({ message: message });
+                if (this.vm.$data.log.length > 5)
+                    return this.vm.$data.log.pop();
             };
             BattleController.prototype.processReport = function (p, report) {
                 return new Promise(function (this$) {
@@ -983,12 +993,12 @@ void function () {
                                                 this$2.log(report.log);
                                             return done();
                                         case 'stopForUserInput':
-                                            this$2.battle.$data.onUserInput = true;
+                                            this$2.vm.$data.onUserInput = true;
                                             return this$2.waitUserInput(report.battlerId).then(function (this$3) {
                                                 return function (userInput) {
                                                     this$3.session.execAction(userInput);
                                                     this$3.sync();
-                                                    this$3.battle.$data.onUserInput = false;
+                                                    this$3.vm.$data.onUserInput = false;
                                                     return done();
                                                 };
                                             }(this$2));
@@ -1005,7 +1015,7 @@ void function () {
             BattleController.prototype.sync = function () {
                 var battler, battlerVM;
                 return function (accum$) {
-                    for (var cache$ = [].concat(this.battle.$data.players, this.battle.$data.enemies), i$ = 0, length$ = cache$.length; i$ < length$; ++i$) {
+                    for (var cache$ = [].concat(this.vm.$data.players, this.vm.$data.enemies), i$ = 0, length$ = cache$.length; i$ < length$; ++i$) {
                         battlerVM = cache$[i$];
                         battler = this.session.findBattlerById(battlerVM.id);
                         battlerVM.wt.current = battler.wt.current;
