@@ -2,19 +2,14 @@ Component = Wdr.UI.Components.Base.Component
 
 module Wdr.UI.Components.Camp
   @Camp = Component.extend
-    template: '''
-    <h1>Camp</h1>
-    <div>
-      name: {{playerName}}
-    </div>
+    template: _cc ->
+      h1 'Camp'
+      text 'name: {{playerName}}'
 
-    <div>
-      gold: {{gold}}
-    </div>
+      div 'gold: {{gold}}'
 
-    <a href='dungeon-select'>ダンジョンへ</a>
-    <a href=''>ログアウト</a>
+      a href:'dungeon-select', -> 'ダンジョンへ'
+      a href:'', 'ログアウト'
 
-    <button v-dispatcher='debug-add-gold'>add coin</button>
-    <button v-dispatcher='save'>save</button>
-    '''
+      button 'v-dispatcher':'debug-add-gold', -> 'add coin'
+      button 'v-dispatcher':'save', 'save'

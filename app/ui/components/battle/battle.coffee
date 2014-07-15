@@ -56,7 +56,7 @@ module Wdr.UI.Components
       skill: Skill
       target: Target
 
-    template: _cc template = ->
+    template: _cc ->
       h3 'Players'
       ul class: 'players', ->
         li 'v-repeat':'players', 'v-component':'battler'
@@ -80,5 +80,3 @@ module Wdr.UI.Components
       h3 'Log'
       ul class: 'logs', ->
         li 'v-repeat':'log', -> '{{message}}'
-
-  console.log _cc template
