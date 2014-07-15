@@ -9,7 +9,12 @@ _module_('Wdr.Utils', function (Wdr, Utils) {
         return jade.compile(str)(obj);
     };
 });
-window._t = Wdr.Utils.template;
+window._j = Wdr.Utils.template;
+window._cc = function (tpl, obj) {
+    if (null == obj)
+        obj = {};
+    return coffeecup.render(tpl, obj);
+};
 window._p = function (fullfill, fail) {
     return new Promise(fullfill, fail);
 };
@@ -487,16 +492,29 @@ void function () {
     var Battler, Component, Skill, Target;
     Component = Wdr.UI.Components.Base.Component;
     Skill = Component.extend({
-        template: _t('button(v-on=\'click: onClick(this)\') {{name}}'),
+        template: _cc(function () {
+            return button({ 'v-on': 'click: onClick(this)' }, '{{name}}');
+        }),
         methods: {
             onClick: function () {
                 return this.$dispatch('skill-selected', this.$data.skillId);
             }
         }
     });
-    Battler = Component.extend({ template: _t('div\n  | lv.{{lv}} : {{name}}\n  | HP: {{hp.current}}/{{hp.max}}\n  | wt: {{wt.current}}/{{wt.max}}') });
+    Battler = Component.extend({
+        template: _cc(function () {
+            return div({ 'class': 'battler' }, function () {
+                span('lv.{{lv}} : {{name}}');
+                span('HP: {{hp.current}}/{{hp.max}}');
+                return span('wt: {{wt.current}}/{{wt.max}}');
+            });
+        })
+    });
     Target = Component.extend({
-        template: _t('button(v-on=\'click: onClick(this)\') {{name}}\n| HP: {{hp.current}}/{{hp.max}}'),
+        template: _cc(function () {
+            button({ 'v-on': 'click: onClick(this)' }, '{{name}}');
+            return text('HP: {{hp.current}}/{{hp.max}}');
+        }),
         methods: {
             onClick: function () {
                 return this.$dispatch('target-selected', this.$data.id);
@@ -504,14 +522,62 @@ void function () {
         }
     });
     _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
+        var template;
         this.Battle = Component.extend({
             components: {
                 battler: Battler,
                 skill: Skill,
                 target: Target
             },
-            template: _t('\nh3 Players\nul.players\n  li(v-repeat=\'players\' v-component=\'battler\')\n\nh3 Enemies\nul.enemies\n  li(v-repeat=\'enemies\' v-component=\'battler\')\n\ndiv(v-show=\'onUserInput\')\n  div(v-show=\'inputState == "skill-select"\')\n    h3 SkillSelector\n    ul.skills\n      li(v-repeat=\'skills\' v-component=\'skill\')\n\n  div(v-show=\'inputState == "target-select"\')\n    h3 TargetSelector\n    ul.targets\n      li(v-repeat=\'targets\' v-component=\'target\')\n      li\n        button(v-dispatcher=\'back-to-skill-select\') \u623b\u308b\n\nh3 Log\nul.logs\n  li(v-repeat=\'log\')\n    {{message}}')
+            template: _cc(template = function () {
+                h3('Players');
+                ul({ 'class': 'players' }, function () {
+                    return li({
+                        'v-repeat': 'players',
+                        'v-component': 'battler'
+                    });
+                });
+                h3('Enemies');
+                ul({ 'class': 'enemies' }, function () {
+                    return li({
+                        'v-repeat': 'enemies',
+                        'v-component': 'battler'
+                    });
+                });
+                div({ 'v-show': 'onUserInput' }, function () {
+                    div({ 'v-show': 'inputState == \'skill-select\'' }, function () {
+                        h3('SkillSelector');
+                        return ul({ 'class': 'skills' }, function () {
+                            return li({
+                                'v-repeat': 'skills',
+                                'v-component': 'skill'
+                            });
+                        });
+                    });
+                    return div({ 'v-show': 'inputState == \'target-select\'' }, function () {
+                        h3('TargetSelector');
+                        return ul({ 'class': 'targets' }, function () {
+                            li({
+                                'v-repeat': 'targets',
+                                'v-component': 'target'
+                            });
+                            return li(function () {
+                                return button({ 'v-dispatcher': 'back-to-skill-select' }, function () {
+                                    return '\u623b\u308b';
+                                });
+                            });
+                        });
+                    });
+                });
+                h3('Log');
+                return ul({ 'class': 'logs' }, function () {
+                    return li({ 'v-repeat': 'log' }, function () {
+                        return '{{message}}';
+                    });
+                });
+            })
         });
+        console.log(_cc(template));
     });
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
