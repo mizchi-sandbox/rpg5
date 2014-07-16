@@ -3,8 +3,7 @@ module Wdr.Services
     gold :: Int
     name :: String
     saveId :: String
-    constructor: () ->
-      @gold = 0
+    players :: Wdr.Entities.Actor[]
 
     save: -> new Promise (done) =>
       Wdr.Storages.SaveObject.findOne(id: @saveId).then (saveObject) =>

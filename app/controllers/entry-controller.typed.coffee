@@ -13,8 +13,6 @@ module Wdr.Controllers
         done()
 
       entry.on 'game-selected', (saveObject :: Wdr.Storages.SaveObject) =>
-        wdr.currentSession = Wdr.Application.createPlaySession(saveObject)
-        localStorage.currentPlayerId = saveObject.id
-
-        @navigate 'camp'
-
+        wdr.loadPlaySession(saveObject).then =>
+          localStorage.currentPlayerId = saveObject.id
+          @navigate 'camp'

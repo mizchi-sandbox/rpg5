@@ -72,6 +72,41 @@ _module_('Wdr.Entities.Base', function (Wdr, Entities, Base) {
         return Entity;
     }();
 });
+_module_('Wdr.Entities', function (Wdr, Entities) {
+    this.Actor = function (super$) {
+        extends$(Actor, super$);
+        0;
+        0;
+        0;
+        0;
+        function Actor(param$) {
+            var cache$;
+            {
+                cache$ = param$;
+                this.name = cache$.name;
+                this.lv = cache$.lv;
+                this.job = cache$.job;
+                this.status = cache$.status;
+            }
+        }
+        return Actor;
+    }(Wdr.Entities.Base.Entity);
+});
+function isOwn$(o, p) {
+    return {}.hasOwnProperty.call(o, p);
+}
+function extends$(child, parent) {
+    for (var key in parent)
+        if (isOwn$(parent, key))
+            child[key] = parent[key];
+    function ctor() {
+        this.constructor = child;
+    }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor();
+    child.__super__ = parent.prototype;
+    return child;
+}
 void function () {
     var ValueWithMax;
     ValueWithMax = Wdr.ValueObjects.ValueWithMax;
@@ -345,12 +380,12 @@ function in$(member, list) {
 }
 _module_('Wdr.Services', function (Wdr, Services) {
     this.PlaySession = function () {
-        0;
-        0;
-        0;
         function PlaySession() {
-            this.gold = 0;
         }
+        0;
+        0;
+        0;
+        0;
         PlaySession.prototype.save = function () {
             return new Promise(function (this$) {
                 return function (done) {
@@ -1302,9 +1337,12 @@ void function () {
                         });
                         return entry.on('game-selected', function (this$1) {
                             return function (saveObject) {
-                                wdr.currentSession = Wdr.Application.createPlaySession(saveObject);
-                                localStorage.currentPlayerId = saveObject.id;
-                                return this$1.navigate('camp');
+                                return wdr.loadPlaySession(saveObject).then(function (this$2) {
+                                    return function () {
+                                        localStorage.currentPlayerId = saveObject.id;
+                                        return this$2.navigate('camp');
+                                    };
+                                }(this$1));
                             };
                         }(this$));
                     };
@@ -1368,17 +1406,37 @@ _module_('Wdr', function (Wdr) {
         0;
         0;
         Application.createPlaySession = function (saveObject) {
-            var session;
-            session = new Wdr.Services.PlaySession();
-            session.saveId = saveObject.id;
-            session.name = saveObject.name;
-            session.gold = saveObject.gold;
-            return session;
+            return new Promise(function (done) {
+                var session;
+                session = new Wdr.Services.PlaySession();
+                session.saveId = saveObject.id;
+                session.name = saveObject.name;
+                session.gold = saveObject.gold;
+                session;
+                return done(session);
+            });
+        };
+        Application.prototype.loadPlaySession = function (saveObject) {
+            return new Promise(function (this$) {
+                return function (done) {
+                    this$.currentSession = new Wdr.Services.PlaySession();
+                    this$.currentSession.saveId = saveObject.id;
+                    this$.currentSession.name = saveObject.name;
+                    this$.currentSession.gold = saveObject.gold;
+                    this$.loaded = true;
+                    return done();
+                };
+            }(this));
         };
         Application.prototype.savePlaySession = function () {
         };
         0;
         function Application() {
+            var instance$;
+            instance$ = this;
+            this.loadPlaySession = function (a) {
+                return Application.prototype.loadPlaySession.apply(instance$, arguments);
+            };
         }
         return Application;
     }();
@@ -1475,8 +1533,9 @@ void function () {
     restoreLastSession = function () {
         return new Promise(function (done) {
             return Wdr.Storages.SaveObject.findOne({ id: localStorage.currentPlayerId }).then(function (saveObject) {
-                wdr.currentSession = Wdr.Application.createPlaySession(saveObject);
-                return done();
+                return wdr.loadPlaySession(saveObject).then(function () {
+                    return done();
+                });
             });
         });
     };

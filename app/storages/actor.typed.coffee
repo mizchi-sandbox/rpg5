@@ -5,7 +5,6 @@ module Wdr.Storages
     ownerId :: String
     name :: String
     lv :: Int
-
     job :: String
     status ::
       str :: Int
