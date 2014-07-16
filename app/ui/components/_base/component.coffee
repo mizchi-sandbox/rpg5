@@ -20,3 +20,9 @@ module Wdr.UI.Components.Base
           @$on eventName, cbs[eventName] = =>
             @$off(k, v) for k, v of cbs
             fn arguments...
+
+      $j: (query) ->
+        $(@$el).find(query)
+
+      $velocity: (query, args...) ->
+        @$j(query).velocity args...

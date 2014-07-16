@@ -18,7 +18,10 @@ gulp.task 'vendor', ->
 
 gulp.task 'css', ->
    gulp
-    .src './app/ui/styles/*.sass'
+    .src [
+      './app/ui/styles/**/*.scss'
+      './app/ui/styles/**/*.sass'
+    ]
     .pipe plumber()
     .pipe sass sourcemap: true, sourcemapPath: 'public/main.css.map'
     .pipe gulp.dest './public'

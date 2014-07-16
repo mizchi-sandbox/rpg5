@@ -1,5 +1,45 @@
-@import("bourbon/bourbon")
-@import("neat/neat")
+@charset "utf-8"
+@import bourbon/bourbon
+@import neat/neat
 
-body
+.debug-header
+  margin: 0 auto
+  width: 1136px
+  height: 25px
+  background-color: white
+
+  transition: all 1.0s ease
+  overflow: hidden
+
+  // v-transition test
+  transition: all 10s ease
+  height: 30px
+  padding: 10px
+  background-color: #eee
+  overflow: hidden
+
+  &.vue-enter, &.vue-leave
+    height: 0
+    padding: 0 10px
+    opacity: 0
+
+#wdr-container
+  margin: 0 auto
+  width: 1136px
+  height: 640px
   background-color: linen
+  overflow: hidden
+
+#scene-root
+  padding: 10px
+
+.entry-container
+  .save-data-list
+    li
+      list-style-type: none
+      @include outer-container()
+      .text
+        @include span-columns(1)
+      button
+        @include span-columns(2)
+

@@ -387,6 +387,43 @@ function in$(member, list) {
     return false;
 }
 _module_('Wdr.Storages', function (Wdr, Storages) {
+    this.Actor = function (super$) {
+        extends$(Actor, super$);
+        function Actor() {
+            super$.apply(this, arguments);
+        }
+        Actor.prototype.key = 'actors';
+        0;
+        0;
+        0;
+        0;
+        0;
+        0;
+        return Actor;
+    }(Momic.Model);
+});
+function isOwn$(o, p) {
+    return {}.hasOwnProperty.call(o, p);
+}
+function extends$(child, parent) {
+    for (var key in parent)
+        if (isOwn$(parent, key))
+            child[key] = parent[key];
+    function ctor() {
+        this.constructor = child;
+    }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor();
+    child.__super__ = parent.prototype;
+    return child;
+}
+function in$(member, list) {
+    for (var i = 0, length = list.length; i < length; ++i)
+        if (i in list && list[i] === member)
+            return true;
+    return false;
+}
+_module_('Wdr.Storages', function (Wdr, Storages) {
     this.SaveObject = function (super$) {
         extends$(SaveObject, super$);
         function SaveObject() {
@@ -463,6 +500,14 @@ _module_('Wdr.UI.Components.Base', function (Wdr, UI, Components, Base) {
                     }
                     return accum$;
                 }.call(this, []);
+            },
+            $j: function (query) {
+                return $(this.$el).find(query);
+            },
+            $velocity: function (query) {
+                var args, cache$;
+                args = arguments.length > 1 ? [].slice.call(arguments, 1) : [];
+                return (cache$ = this.$j(query)).velocity.apply(cache$, [].slice.call(args));
             }
         }
     });
@@ -723,16 +768,26 @@ void function () {
     _module_('Wdr.UI.Components.Entry', function (Wdr, UI, Components, Entry) {
         this.Entry = Component.extend({
             template: _cc(function () {
-                h1('\u5192\u967a\u3092\u59cb\u3081\u308b');
-                return ul(function () {
-                    return li({ 'v-repeat': 'saveObjects' }, function () {
-                        text('{{name}} / gold: {{gold}}');
-                        return button({ 'v-on': 'click:selectGame(this)' }, function () {
-                            return '\u306f\u3058\u3081\u308b';
+                return div({ 'class': 'entry-container' }, function () {
+                    h1('RPG(\u4eee) proto5');
+                    hr();
+                    h2('\u5192\u967a\u3092\u59cb\u3081\u308b');
+                    ul({ 'class': 'save-data-list' }, function () {
+                        return li({ 'v-repeat': 'saveObjects' }, function () {
+                            span({ 'class': 'text' }, '\u30c7\u30fc\u30bf{{$index}}:');
+                            span({ 'class': 'text' }, '{{name}}');
+                            span({ 'class': 'text' }, '${{gold}}');
+                            return button({ 'v-on': 'click:selectGame(this)' }, '\u306f\u3058\u3081\u308b');
                         });
                     });
+                    return p('\u6ce8\u610f: mizchi\u304c\u958b\u767a\u3057\u3066\u3044\u308bRPG\u306e\u30d7\u30ed\u30c8\u30bf\u30a4\u30d7\u3067\u3059\u3002\u4e88\u544a\u306a\u304f\u30c7\u30fc\u30bf\u306e\u4e92\u63db\u6027\u304c\u58ca\u308c\u308b\u3053\u3068\u304c\u3042\u308a\u307e\u3059\u3002');
                 });
             }),
+            attached: function () {
+                console.log('attached');
+                this.$j('h1').css({ opacity: 0 });
+                return this.$j('h1').velocity({ opacity: 1 }, 1000);
+            },
             methods: {
                 selectGame: function (saveObject) {
                     return this.$dispatch('game-selected', saveObject);
@@ -766,13 +821,20 @@ void function () {
     var Component;
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components.Layout', function (Wdr, UI, Components, Layout) {
+        0;
         this.Layout = Component.extend({
             template: _cc(function () {
-                header({ 'v-show': 'showHeader' }, function () {
+                header({
+                    'class': 'debug-header',
+                    'v-show': 'showHeader',
+                    'v-transition': true
+                }, function () {
                     a({ href: '/camp' }, 'Camp');
                     return button({ 'v-on': 'click: clearStorages' }, '\u521d\u671f\u5316');
                 });
-                return div({ id: 'scene-root' });
+                return div({ id: 'wdr-container' }, function () {
+                    return div({ id: 'scene-root' });
+                });
             }),
             methods: {
                 clearStorages: function () {
@@ -784,6 +846,11 @@ void function () {
             }
         });
     });
+    console.log(_cc(function () {
+        return span({ 'v-transition': true }, function () {
+            return 'aaa';
+        });
+    }));
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1338,31 +1405,70 @@ function in$(member, list) {
     return false;
 }
 void function () {
-    var initializeStorages, restoreLastSession, startRouter;
+    var createCheatSave, createDummySave, initializeStorages, restoreLastSession, startRouter;
     localforage.setDriver('localStorageWrapper');
+    createDummySave = function () {
+        return new Promise(function (done) {
+            return Wdr.Storages.SaveObject.insert({
+                name: 'mizchi',
+                gold: 0
+            }).then(function (param$) {
+                var save;
+                save = param$[0];
+                return Wdr.Storages.Actor.insert({
+                    ownerId: save.id,
+                    name: 'mizchi',
+                    lv: 1,
+                    job: 'novice',
+                    status: {
+                        str: 10,
+                        int: 10,
+                        dex: 10
+                    }
+                }).then(done);
+            });
+        });
+    };
+    createCheatSave = function () {
+        return new Promise(function (done) {
+            return Wdr.Storages.SaveObject.insert({
+                name: 'cheater',
+                gold: 0
+            }).then(function (param$) {
+                var save;
+                save = param$[0];
+                return Wdr.Storages.Actor.insert({
+                    ownerId: save.id,
+                    name: 'cheater',
+                    lv: 100,
+                    job: 'novice',
+                    status: {
+                        str: 30,
+                        int: 30,
+                        dex: 30
+                    }
+                }).then(done);
+            });
+        });
+    };
     initializeStorages = function () {
         return new Promise(function (done) {
             return Momic.Model.setup({
                 name: 'wdr',
-                collections: { saves: {} }
-            }).then(function () {
-                if (null != localStorage.getItem('dbInitialized')) {
-                    return done();
-                } else {
-                    return Wdr.Storages.SaveObject.insert([
-                        {
-                            name: 'mizchi',
-                            gold: 0
-                        },
-                        {
-                            name: 'smurph',
-                            gold: 100000
-                        }
-                    ]).then(function () {
-                        localStorage.setItem('dbInitialized', 'initialized');
-                        return done();
-                    });
+                collections: {
+                    saves: {},
+                    actors: {}
                 }
+            }).then(function () {
+                if (null != localStorage.getItem('dbInitialized'))
+                    return done();
+                return Promise.all([
+                    createDummySave(),
+                    createCheatSave()
+                ]).then(function () {
+                    localStorage.setItem('dbInitialized', 'initialized');
+                    return done();
+                });
             });
         });
     };
