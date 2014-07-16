@@ -1,6 +1,57 @@
-@import("bourbon/bourbon");
-@import("neat/neat");
-body {
-  background-color: linen; }
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.debug-header {
+  margin: 0 auto;
+  width: 1136px;
+  height: 25px;
+  background-color: white;
+  transition: all 1s ease;
+  overflow: hidden;
+  transition: all 10s ease;
+  height: 30px;
+  padding: 10px;
+  background-color: #eeeeee;
+  overflow: hidden; }
+  .debug-header.vue-enter, .debug-header.vue-leave {
+    height: 0;
+    padding: 0 10px;
+    opacity: 0; }
+
+#wdr-container {
+  margin: 0 auto;
+  width: 1136px;
+  height: 640px;
+  background-color: linen;
+  overflow: hidden; }
+
+#scene-root {
+  padding: 10px; }
+
+.entry-container .save-data-list li {
+  list-style-type: none;
+  max-width: 68em;
+  margin-left: auto;
+  margin-right: auto; }
+  .entry-container .save-data-list li:after {
+    content: "";
+    display: table;
+    clear: both; }
+  .entry-container .save-data-list li .text {
+    float: left;
+    display: block;
+    margin-right: 2.35765%;
+    width: 6.17215%; }
+    .entry-container .save-data-list li .text:last-child {
+      margin-right: 0; }
+  .entry-container .save-data-list li button {
+    float: left;
+    display: block;
+    margin-right: 2.35765%;
+    width: 14.70196%; }
+    .entry-container .save-data-list li button:last-child {
+      margin-right: 0; }
 
 /*# sourceMappingURL=main.css.map */
