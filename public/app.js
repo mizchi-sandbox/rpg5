@@ -1554,6 +1554,7 @@ void function () {
         return Wdr.createRoutes(new Warden());
     };
     $(function () {
+        FastClick.attach(document.body);
         return initializeStorages().then(function () {
             window.wdr = new Wdr.Application();
             if (localStorage.currentPlayerId) {

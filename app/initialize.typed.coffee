@@ -61,6 +61,7 @@ startRouter = ->
   Wdr.createRoutes new Warden
 
 $ =>
+  FastClick.attach(document.body)
   initializeStorages().then =>
     window.wdr = new Wdr.Application
     if localStorage.currentPlayerId
