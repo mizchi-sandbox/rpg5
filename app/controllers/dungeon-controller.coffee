@@ -8,6 +8,8 @@ module Wdr.Controllers
       dungeon.$appendTo '#scene-root'
       dungeon.$data.name = req.name
 
+      localStorage.resumePoint = location.hash
+
       dungeon.on 'start-battle', =>
         wdr.context = {
           from: location.hash

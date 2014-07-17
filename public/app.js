@@ -309,20 +309,37 @@ _module_('Wdr.Services', function (Wdr, Services) {
             actor = this.findBattlerById(actorId);
             if (skillId === 'attack') {
                 target = this.findBattlerById(targetId);
-                target.hp.current--;
+                target.hp.current -= 4;
                 console.log('attack');
             } else if (skillId === 'defenece') {
                 console.log('defenece');
             }
             return actor.wt.current = 1;
         };
+        BattleSession.prototype.isBattleFinisihed = function () {
+            if (_.all(this.enemies.map(function (e) {
+                    return e.hp.current <= 0;
+                }))) {
+                return { eventType: 'player-win' };
+            } else if (_.all(this.enemies.map(function (e) {
+                    return e.hp.current <= 0;
+                }))) {
+                return { eventType: 'enemy-win' };
+            } else {
+                return false;
+            }
+        };
         BattleSession.prototype.processTurn = function () {
             return new Promise(function (this$) {
                 return function (done) {
-                    var p, reports;
+                    var p, reports, result;
+                    if (result = this$.isBattleFinisihed())
+                        done([result]);
                     reports = [];
                     for (var cache$ = [].concat(this$.players, this$.enemies), i$ = 0, length$ = cache$.length; i$ < length$; ++i$) {
                         p = cache$[i$];
+                        if (p.hp.current < 1)
+                            continue;
                         if (p.wt.current < p.wt.max) {
                             p.wt.current++;
                         } else if (in$(p, this$.players)) {
@@ -592,8 +609,9 @@ void function () {
     });
     Target = Component.extend({
         template: _cc(function () {
-            button({ 'v-on': 'click: onClick(this)' }, '{{name}}');
-            return text('HP: {{hp.current}}/{{hp.max}}');
+            return button({ 'v-on': 'click: onClick(this)' }, function () {
+                return text('{{name}}:HP:{{hp.current}}/{{hp.max}}');
+            });
         }),
         methods: {
             onClick: function () {
@@ -609,49 +627,50 @@ void function () {
                 target: Target
             },
             template: _cc(function () {
-                h3('Players');
-                ul({ 'class': 'players' }, function () {
-                    return li({
-                        'v-repeat': 'players',
-                        'v-component': 'battler'
-                    });
-                });
-                h3('Enemies');
-                ul({ 'class': 'enemies' }, function () {
-                    return li({
-                        'v-repeat': 'enemies',
-                        'v-component': 'battler'
-                    });
-                });
-                div({ 'v-show': 'onUserInput' }, function () {
-                    div({ 'v-show': 'inputState == \'skill-select\'' }, function () {
-                        h3('SkillSelector');
-                        return ul({ 'class': 'skills' }, function () {
-                            return li({
-                                'v-repeat': 'skills',
-                                'v-component': 'skill'
-                            });
+                return div({ 'class': 'battle-container' }, function () {
+                    ul({ 'class': 'players' }, function () {
+                        return li({
+                            'v-repeat': 'players',
+                            'v-component': 'battler'
                         });
                     });
-                    return div({ 'v-show': 'inputState == \'target-select\'' }, function () {
-                        h3('TargetSelector');
-                        return ul({ 'class': 'targets' }, function () {
-                            li({
-                                'v-repeat': 'targets',
-                                'v-component': 'target'
+                    ul({ 'class': 'enemies' }, function () {
+                        return li({
+                            'v-repeat': 'enemies',
+                            'v-component': 'battler'
+                        });
+                    });
+                    div({
+                        'class': 'user-controller',
+                        'v-show': 'onUserInput'
+                    }, function () {
+                        div({ 'v-show': 'inputState == \'skill-select\'' }, function () {
+                            return ul({ 'class': 'skills' }, function () {
+                                return li({
+                                    'v-repeat': 'skills',
+                                    'v-component': 'skill'
+                                });
                             });
-                            return li(function () {
-                                return button({ 'v-dispatcher': 'back-to-skill-select' }, function () {
-                                    return '\u623b\u308b';
+                        });
+                        return div({ 'v-show': 'inputState == \'target-select\'' }, function () {
+                            return ul({ 'class': 'targets' }, function () {
+                                li({
+                                    'v-repeat': 'targets',
+                                    'v-component': 'target'
+                                });
+                                return li(function () {
+                                    return button({ 'v-dispatcher': 'back-to-skill-select' }, function () {
+                                        return '\u623b\u308b';
+                                    });
                                 });
                             });
                         });
                     });
-                });
-                h3('Log');
-                return ul({ 'class': 'logs' }, function () {
-                    return li({ 'v-repeat': 'log' }, function () {
-                        return '{{message}}';
+                    h3('Log');
+                    return ul({ 'class': 'logs' }, function () {
+                        return li({ 'v-repeat': 'log' }, function () {
+                            return '{{message}}';
+                        });
                     });
                 });
             })
@@ -727,6 +746,7 @@ void function () {
     _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
         this.DungeonSelect = Component.extend({
             template: _cc(function () {
+                h2('\u30c0\u30f3\u30b8\u30e7\u30f3\u3092\u9078\u3093\u3067\u304f\u3060\u3055\u3044');
                 return ul(function () {
                     return li({ 'v-repeat': 'dungeons' }, function () {
                         return a({ href: 'dungeons/{{href}}' }, '{{name}}');
@@ -859,16 +879,16 @@ void function () {
         0;
         this.Layout = Component.extend({
             template: _cc(function () {
-                header({
+                div({ id: 'wdr-container' }, function () {
+                    return div({ id: 'scene-root' });
+                });
+                return header({
                     'class': 'debug-header',
                     'v-show': 'showHeader',
                     'v-transition': true
                 }, function () {
                     a({ href: '/camp' }, 'Camp');
                     return button({ 'v-on': 'click: clearStorages' }, '\u521d\u671f\u5316');
-                });
-                return div({ id: 'wdr-container' }, function () {
-                    return div({ id: 'scene-root' });
                 });
             }),
             methods: {
@@ -1084,12 +1104,18 @@ void function () {
             };
             BattleController.prototype.processReport = function (p, report) {
                 return new Promise(function (this$) {
-                    return function (done) {
+                    return function (done, reject) {
                         return p.then(function (this$1) {
                             return function () {
                                 return setTimeout(function (this$2) {
                                     return function () {
                                         switch (report.eventType) {
+                                        case 'player-win':
+                                            this$2.stopped = true;
+                                            return reject();
+                                        case 'enemy-win':
+                                            this$2.stopped = true;
+                                            return reject();
                                         case 'action':
                                             if (report.log)
                                                 this$2.log(report.log);
@@ -1141,11 +1167,22 @@ void function () {
                                             };
                                         }(this$2), 50);
                                     };
+                                }(this$1), function (this$2) {
+                                    return function () {
+                                        return this$2.end();
+                                    };
                                 }(this$1));
                             };
                         }(this$));
                     };
                 }(this))();
+            };
+            BattleController.prototype.end = function () {
+                if (localStorage.resumePoint) {
+                    return this.navigate(localStorage.resumePoint);
+                } else {
+                    return this.navigate('camp');
+                }
             };
             return BattleController;
         }(Controller);
@@ -1239,6 +1276,7 @@ void function () {
                 dungeon = this.reuse(Dungeon);
                 dungeon.$appendTo('#scene-root');
                 dungeon.$data.name = req.name;
+                localStorage.resumePoint = location.hash;
                 return dungeon.on('start-battle', function (this$) {
                     return function () {
                         wdr.context = {
@@ -1566,6 +1604,24 @@ void function () {
             }
         });
     });
+    window.addEventListener('mousedown', function (e) {
+        return e.preventDefault();
+    }, false);
+    window.addEventListener('mousemove', function (e) {
+        return e.preventDefault();
+    }, false);
+    window.addEventListener('mouseup', function (e) {
+        return e.preventDefault();
+    }, false);
+    window.addEventListener('touchstart', function (e) {
+        return e.preventDefault();
+    }, false);
+    window.addEventListener('touchmove', function (e) {
+        return e.preventDefault();
+    }, false);
+    window.addEventListener('touchend', function (e) {
+        return e.preventDefault();
+    }, false);
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }

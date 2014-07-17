@@ -39,8 +39,8 @@ Battler = Component.extend
 #     max :: Int
 Target = Component.extend
   template: _cc ->
-    button 'v-on':'click: onClick(this)', '{{name}}'
-    text 'HP: {{hp.current}}/{{hp.max}}'
+    button 'v-on':'click: onClick(this)', ->
+      text '{{name}}:HP:{{hp.current}}/{{hp.max}}'
 
   methods:
     onClick: ->
@@ -57,26 +57,24 @@ module Wdr.UI.Components
       target: Target
 
     template: _cc ->
-      h3 'Players'
-      ul class: 'players', ->
-        li 'v-repeat':'players', 'v-component':'battler'
+      div class: 'battle-container', ->
+        ul class: 'players', ->
+          li 'v-repeat':'players', 'v-component':'battler'
 
-      h3 'Enemies'
-      ul class: 'enemies', ->
-        li 'v-repeat':'enemies', 'v-component':'battler'
+        ul class: 'enemies', ->
+          li 'v-repeat':'enemies', 'v-component':'battler'
 
-      div 'v-show':'onUserInput', ->
-        div 'v-show': "inputState == \'skill-select\'", ->
-          h3 'SkillSelector'
-          ul class: 'skills', ->
-            li 'v-repeat':'skills', 'v-component':'skill'
+        div class:'user-controller', 'v-show':'onUserInput', ->
+          div 'v-show': "inputState == \'skill-select\'", ->
+            ul class: 'skills', ->
+              li 'v-repeat':'skills', 'v-component':'skill'
 
-        div 'v-show': "inputState == \'target-select\'", ->
-          h3 'TargetSelector'
-          ul class: 'targets', ->
-            li 'v-repeat':'targets', 'v-component':'target'
-            li -> button 'v-dispatcher':'back-to-skill-select', -> '戻る'
+          div 'v-show': "inputState == \'target-select\'", ->
+            ul class: 'targets', ->
+              li 'v-repeat':'targets', 'v-component':'target'
+              li ->
+                button 'v-dispatcher':'back-to-skill-select', -> '戻る'
 
-      h3 'Log'
-      ul class: 'logs', ->
-        li 'v-repeat':'log', -> '{{message}}'
+        h3 'Log'
+        ul class: 'logs', ->
+          li 'v-repeat':'log', -> '{{message}}'

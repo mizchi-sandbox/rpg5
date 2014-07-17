@@ -87,9 +87,16 @@ module Wdr.Controllers
         @vm.$data.log.pop()
 
     # processReport :: Promise<Any> * Report -> ()
-    processReport: (p, report) => new Promise (done) => p.then =>
+    processReport: (p, report) => new Promise (done, reject) => p.then =>
       setTimeout (=>
         switch report.eventType
+          when 'player-win'
+            @stopped = true
+            reject()
+          when 'enemy-win'
+            @stopped = true
+            reject()
+
           when 'action'
             @log report.log if report.log
             done()
@@ -117,8 +124,16 @@ module Wdr.Controllers
       do update = =>
         @session.processTurn().then (reports) =>
           reports.reduce(@processReport, Promise.resolve())
-          .then =>
+          .then (=>
             setTimeout (=>
               @sync()
               update()
             ), 50
+          ), =>
+            @end()
+
+    end: ->
+      if localStorage.resumePoint
+        @navigate localStorage.resumePoint
+      else
+        @navigate 'camp'

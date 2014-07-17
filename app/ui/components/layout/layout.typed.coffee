@@ -4,6 +4,8 @@ module Wdr.UI.Components.Layout
   showHeader :: Boolean
   @Layout = Component.extend
     template: _cc ->
+      div id: 'wdr-container', ->
+        div id: 'scene-root'
       header {
         class: 'debug-header',
         'v-show': 'showHeader',
@@ -11,8 +13,6 @@ module Wdr.UI.Components.Layout
         }, ->
           a href:'/camp', 'Camp'
           button 'v-on':'click: clearStorages', '初期化'
-      div id: 'wdr-container', ->
-        div id: 'scene-root'
 
     methods:
       clearStorages: ->

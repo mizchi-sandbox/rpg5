@@ -68,3 +68,11 @@ $ =>
       restoreLastSession().then => startRouter()
     else
       startRouter()
+
+window.addEventListener "mousedown", ((e) -> e.preventDefault()), false
+window.addEventListener "mousemove", ((e) -> e.preventDefault()), false
+window.addEventListener "mouseup", ((e) -> e.preventDefault()), false
+window.addEventListener "touchstart", ((e) -> e.preventDefault()), false
+window.addEventListener "touchmove", ((e) -> e.preventDefault()), false
+window.addEventListener "touchend", ((e) -> e.preventDefault()), false
+

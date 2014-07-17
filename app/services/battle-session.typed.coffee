@@ -20,16 +20,29 @@ module Wdr.Services
       actor = @findBattlerById(actorId)
       if skillId is 'attack'
         target = @findBattlerById(targetId)
-        target.hp.current--
+        target.hp.current -= 4
         console.log 'attack'
       else if skillId is 'defenece'
         console.log 'defenece'
 
       actor.wt.current = 1
 
+    isBattleFinisihed: ->
+      if _.all @enemies.map (e) -> e.hp.current <= 0
+        {eventType: 'player-win'}
+      else if _.all @enemies.map (e) -> e.hp.current <= 0
+        {eventType: 'enemy-win'}
+      else
+        false
+
     processTurn: -> new Promise (done) =>
+      if result = @isBattleFinisihed()
+        done([result])
+
       reports = []
       for p in [].concat(@players, @enemies)
+        continue if p.hp.current < 1
+
         if p.wt.current < p.wt.max
           p.wt.current++
         else
