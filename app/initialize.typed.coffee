@@ -14,15 +14,17 @@ createDummySave = -> new Promise (done) ->
         str: 10
         int: 10
         dex: 10
-    ).then done
+    ).then ([member]) =>
+      save.partyMemberIds = [member.id]
+      save.save().then => done()
 
 createCheatSave = -> new Promise (done) ->
   Wdr.Storages.SaveObject.insert(
     name: 'cheater'
-    gold: 0
+    gold: 100000
   ).then ([save]) =>
     Wdr.Storages.Actor.insert(
-      ownerId: save.id
+      ownerSaveId: save.id
       name: 'cheater'
       lv: 100
       job: 'novice'
@@ -30,7 +32,9 @@ createCheatSave = -> new Promise (done) ->
         str: 30
         int: 30
         dex: 30
-    ).then done
+    ).then ([member]) =>
+      save.partyMemberIds = [member.id]
+      save.save().then => done()
 
 initializeStorages = -> new Promise (done) ->
   Momic.Model.setup(

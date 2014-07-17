@@ -8,7 +8,7 @@ module Wdr.Controllers
       delete localStorage.currentPlayerId
       entry = @reuse(Entry)
       Wdr.Storages.SaveObject.find().then (saveObjects) =>
-        entry.$data.saveObjects = saveObjects
+        entry.$data.saveObjects = _.clone saveObjects
         entry.$appendTo '#scene-root'
         done()
 

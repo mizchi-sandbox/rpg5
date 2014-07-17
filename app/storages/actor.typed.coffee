@@ -2,7 +2,7 @@ module Wdr.Storages
   class @Actor extends Momic.Model
     key: 'actors'
     id :: String
-    ownerId :: String
+    ownerSaveId :: String
     name :: String
     lv :: Int
     job :: String
