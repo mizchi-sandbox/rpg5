@@ -1331,7 +1331,7 @@ void function () {
                         delete localStorage.currentPlayerId;
                         entry = this$.reuse(Entry);
                         Wdr.Storages.SaveObject.find().then(function (saveObjects) {
-                            entry.$data.saveObjects = saveObjects;
+                            entry.$data.saveObjects = _.clone(saveObjects);
                             entry.$appendTo('#scene-root');
                             return done();
                         });
@@ -1405,17 +1405,6 @@ _module_('Wdr', function (Wdr) {
     this.Application = function () {
         0;
         0;
-        Application.createPlaySession = function (saveObject) {
-            return new Promise(function (done) {
-                var session;
-                session = new Wdr.Services.PlaySession();
-                session.saveId = saveObject.id;
-                session.name = saveObject.name;
-                session.gold = saveObject.gold;
-                session;
-                return done(session);
-            });
-        };
         Application.prototype.loadPlaySession = function (saveObject) {
             return new Promise(function (this$) {
                 return function (done) {
@@ -1423,8 +1412,15 @@ _module_('Wdr', function (Wdr) {
                     this$.currentSession.saveId = saveObject.id;
                     this$.currentSession.name = saveObject.name;
                     this$.currentSession.gold = saveObject.gold;
-                    this$.loaded = true;
-                    return done();
+                    return Wdr.Storages.Actor.find({ ownerId: saveObject.id }).then(function (this$1) {
+                        return function (actors) {
+                            this$1.currentSession.actors = actors.map(function (actor) {
+                                return new Wdr.Entities.Actor(actor);
+                            });
+                            this$1.loaded = true;
+                            return done();
+                        };
+                    }(this$));
                 };
             }(this));
         };
@@ -1483,7 +1479,14 @@ void function () {
                         int: 10,
                         dex: 10
                     }
-                }).then(done);
+                }).then(function (param$1) {
+                    var member;
+                    member = param$1[0];
+                    save.partyMemberIds = [member.id];
+                    return save.save().then(function () {
+                        return done();
+                    });
+                });
             });
         });
     };
@@ -1491,12 +1494,12 @@ void function () {
         return new Promise(function (done) {
             return Wdr.Storages.SaveObject.insert({
                 name: 'cheater',
-                gold: 0
+                gold: 100000
             }).then(function (param$) {
                 var save;
                 save = param$[0];
                 return Wdr.Storages.Actor.insert({
-                    ownerId: save.id,
+                    ownerSaveId: save.id,
                     name: 'cheater',
                     lv: 100,
                     job: 'novice',
@@ -1505,7 +1508,14 @@ void function () {
                         int: 30,
                         dex: 30
                     }
-                }).then(done);
+                }).then(function (param$1) {
+                    var member;
+                    member = param$1[0];
+                    save.partyMemberIds = [member.id];
+                    return save.save().then(function () {
+                        return done();
+                    });
+                });
             });
         });
     };
