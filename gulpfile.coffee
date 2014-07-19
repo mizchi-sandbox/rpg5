@@ -7,8 +7,27 @@ shell      = require 'gulp-shell'
 bowerFiles = require "gulp-bower-files"
 source     = require 'vinyl-source-stream'
 browserify = require 'browserify'
+typescript = require 'gulp-tsc'
+tsd        = require 'gulp-tsd'
 
 gulp.task 'js', shell.task ['zsh build.zsh']
+
+gulp.task 'ts', ->
+  gulp
+    .src ['app/domains/application.ts']
+    .pipe plumber()
+    .pipe typescript
+      sourcemap: true
+      outDir: './public'
+      target: 'ES5'
+      module: 'commonjs'
+    .pipe rename 'application.js'
+    .pipe gulp.dest 'public'
+
+gulp.task 'tsd', ->
+  gulp
+    .src './gulp-tsd.json'
+    .pipe tsd()
 
 gulp.task 'vendor', ->
   bowerFiles()

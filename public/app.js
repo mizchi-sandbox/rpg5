@@ -1141,6 +1141,11 @@ void function () {
                                                         name: '\u9632\u5fa1',
                                                         skillId: 'defenece',
                                                         targetType: 'none'
+                                                    },
+                                                    {
+                                                        name: '\u9003\u8d70',
+                                                        skillId: 'escape',
+                                                        targetType: 'none'
                                                     }
                                                 ];
                                             };
