@@ -75,6 +75,6 @@ module Wdr.UI.Components
               li ->
                 button 'v-dispatcher':'back-to-skill-select', -> '戻る'
 
-        h3 'Log'
+        hr()
         ul class: 'logs', ->
           li 'v-repeat':'log', -> '{{message}}'

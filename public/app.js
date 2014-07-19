@@ -313,6 +313,8 @@ _module_('Wdr.Services', function (Wdr, Services) {
                 console.log('attack');
             } else if (skillId === 'defenece') {
                 console.log('defenece');
+            } else if (skillId === 'escape') {
+                console.log('escape');
             }
             return actor.wt.current = 1;
         };
@@ -586,6 +588,66 @@ function in$(member, list) {
     return false;
 }
 void function () {
+    var Component;
+    Component = Wdr.UI.Components.Base.Component;
+    _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
+        this.BattleResult = Component.extend({
+            created: function () {
+                return console.log('battle result created');
+            },
+            data: {
+                gold: 50,
+                exp: 20,
+                rewards: [
+                    { itemName: '\u85ac\u8349' },
+                    { itemName: '\u9244\u9271\u77f3' }
+                ]
+            },
+            template: _cc(function () {
+                h2('You win');
+                p(function () {
+                    return span('\u7372\u5f97\u30b4\u30fc\u30eb\u30c9: {{gold}}');
+                });
+                p(function () {
+                    return span('\u7372\u5f97\u7d4c\u9a13\u5024: {{exp}}');
+                });
+                ul(function () {
+                    return li({ 'v-repeat': 'rewards' }, function () {
+                        return span('{{itemName}}');
+                    });
+                });
+                return button({ 'v-on': 'click: back' }, '\u623b\u308b');
+            }),
+            methods: {
+                back: function () {
+                    return this.$dispatch('back');
+                }
+            }
+        });
+    });
+    function isOwn$(o, p) {
+        return {}.hasOwnProperty.call(o, p);
+    }
+    function extends$(child, parent) {
+        for (var key in parent)
+            if (isOwn$(parent, key))
+                child[key] = parent[key];
+        function ctor() {
+            this.constructor = child;
+        }
+        ctor.prototype = parent.prototype;
+        child.prototype = new ctor();
+        child.__super__ = parent.prototype;
+        return child;
+    }
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
+}.call(this);
+void function () {
     var Battler, Component, Skill, Target;
     Component = Wdr.UI.Components.Base.Component;
     Skill = Component.extend({
@@ -666,7 +728,7 @@ void function () {
                             });
                         });
                     });
-                    h3('Log');
+                    hr();
                     return ul({ 'class': 'logs' }, function () {
                         return li({ 'v-repeat': 'log' }, function () {
                             return '{{message}}';
@@ -707,14 +769,31 @@ void function () {
                 h1('Camp');
                 text('name: {{playerName}}');
                 div('gold: {{gold}}');
-                a({ href: 'dungeon-select' }, function () {
-                    return '\u30c0\u30f3\u30b8\u30e7\u30f3\u3078';
+                return ul({ 'class': 'menu' }, function () {
+                    li(function () {
+                        return a({ href: 'dungeon-select' }, function () {
+                            return '\u30c0\u30f3\u30b8\u30e7\u30f3\u3078';
+                        });
+                    });
+                    li(function () {
+                        return a(function () {
+                            return '\u88c5\u5099';
+                        });
+                    });
+                    li(function () {
+                        return a(function () {
+                            return '\u30b9\u30ad\u30eb';
+                        });
+                    });
+                    li(function () {
+                        return a(function () {
+                            return '\u30b7\u30e7\u30c3\u30d7';
+                        });
+                    });
+                    return li(function () {
+                        return a({ href: '' }, '\u30ed\u30b0\u30a2\u30a6\u30c8');
+                    });
                 });
-                a({ href: '' }, '\u30ed\u30b0\u30a2\u30a6\u30c8');
-                button({ 'v-dispatcher': 'debug-add-gold' }, function () {
-                    return 'add coin';
-                });
-                return button({ 'v-dispatcher': 'save' }, 'save');
             })
         });
     });
@@ -787,11 +866,21 @@ void function () {
     var Component;
     Component = Wdr.UI.Components.Base.Component;
     _module_('Wdr.UI.Components', function (Wdr, UI, Components) {
-        this.Dungeon = Component.extend({
+        var Cell;
+        Cell = Component.extend({
             template: _cc(function () {
-                h1('\u30c0\u30f3\u30b8\u30e7\u30f3: {{name}}');
-                button({ 'v-dispatcher': 'search' }, '\u63a2\u3059');
-                return button({ 'v-dispatcher': 'start-battle' }, '\u6226\u95d8');
+                return span('{{$index}}');
+            })
+        });
+        this.Dungeon = Component.extend({
+            components: { cell: Cell },
+            template: _cc(function () {
+                return div({ 'class': 'dungeon-container' }, function () {
+                    h1('\u30c0\u30f3\u30b8\u30e7\u30f3: {{name}}');
+                    button({ 'v-dispatcher': 'search' }, '\u63a2\u3059');
+                    button({ 'v-dispatcher': 'start-battle' }, '\u6226\u95d8');
+                    return button({ 'v-dispatcher': 'back' }, '\u623b\u308b');
+                });
             })
         });
     });
@@ -887,25 +976,36 @@ void function () {
                     'v-show': 'showHeader',
                     'v-transition': true
                 }, function () {
-                    a({ href: '/camp' }, 'Camp');
+                    text('debug');
+                    button({ 'v-on': 'click: toCamp' }, '\u30ad\u30e3\u30f3\u30d7\u3078');
+                    button({ 'v-on': 'click: addGold' }, function () {
+                        return '\u30b4\u30fc\u30eb\u30c9\u5897\u52a0';
+                    });
+                    button({ 'v-on': 'click: save' }, 'save');
                     return button({ 'v-on': 'click: clearStorages' }, '\u521d\u671f\u5316');
                 });
             }),
             methods: {
+                toCamp: function () {
+                    return Warden.navigate('camp');
+                },
                 clearStorages: function () {
                     return localforage.clear().then(function () {
                         Warden.navigate('/');
                         return window.location.reload();
                     });
+                },
+                addGold: function () {
+                    return wdr.currentSession.gold += 100;
+                },
+                save: function () {
+                    return wdr.currentSession.save().done(function () {
+                        return console.log('save done');
+                    });
                 }
             }
         });
     });
-    console.log(_cc(function () {
-        return span({ 'v-transition': true }, function () {
-            return 'aaa';
-        });
-    }));
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1178,13 +1278,58 @@ void function () {
                 }(this))();
             };
             BattleController.prototype.end = function () {
-                if (localStorage.resumePoint) {
-                    return this.navigate(localStorage.resumePoint);
-                } else {
-                    return this.navigate('camp');
-                }
+                return this.navigate('battle-result');
             };
             return BattleController;
+        }(Controller);
+    });
+    function isOwn$(o, p) {
+        return {}.hasOwnProperty.call(o, p);
+    }
+    function extends$(child, parent) {
+        for (var key in parent)
+            if (isOwn$(parent, key))
+                child[key] = parent[key];
+        function ctor() {
+            this.constructor = child;
+        }
+        ctor.prototype = parent.prototype;
+        child.prototype = new ctor();
+        child.__super__ = parent.prototype;
+        return child;
+    }
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
+}.call(this);
+void function () {
+    var BattleResult, Controller;
+    Controller = Wdr.Controllers.Base.Controller;
+    BattleResult = Wdr.UI.Components.BattleResult;
+    _module_('Wdr.Controllers', function (Wdr, Controllers) {
+        this.BattleResultController = function (super$) {
+            extends$(BattleResultController, super$);
+            function BattleResultController() {
+                super$.apply(this, arguments);
+            }
+            BattleResultController.prototype.index = function () {
+                this.vm = this.reuse(BattleResult);
+                this.vm.$appendTo('#scene-root');
+                return this.vm.on('back', function (this$) {
+                    return function () {
+                        console.log('battle result');
+                        if (localStorage.resumePoint) {
+                            return this$.navigate(localStorage.resumePoint);
+                        } else {
+                            return this$.navigate('camp');
+                        }
+                    };
+                }(this));
+            };
+            return BattleResultController;
         }(Controller);
     });
     function isOwn$(o, p) {
@@ -1223,18 +1368,7 @@ void function () {
                 camp = this.reuse(Camp);
                 camp.$appendTo('#scene-root');
                 camp.$data.playerName = wdr.currentSession.name;
-                camp.$data.gold = wdr.currentSession.gold;
-                camp.on('debug-add-gold', function () {
-                    var gold;
-                    gold = camp.$data.gold + 100;
-                    camp.$data.gold = gold;
-                    return wdr.currentSession.gold = gold;
-                });
-                return camp.on('save', function () {
-                    return wdr.currentSession.save().done(function () {
-                        return console.log('save done');
-                    });
-                });
+                return camp.$data.gold = wdr.currentSession.gold;
             };
             return CampController;
         }(Controllers.Base.Controller);
@@ -1262,9 +1396,76 @@ void function () {
     }
 }.call(this);
 void function () {
-    var Controller, Dungeon;
+    var Controller, createDummyDungeon, Dungeon;
     Controller = Wdr.Controllers.Base.Controller;
     Dungeon = Wdr.UI.Components.Dungeon;
+    createDummyDungeon = function () {
+        return [
+            [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ],
+            [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            [
+                1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                1
+            ],
+            [
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                1
+            ],
+            [
+                1,
+                0,
+                1,
+                1,
+                0,
+                0,
+                1
+            ],
+            [
+                1,
+                0,
+                1,
+                0,
+                0,
+                1,
+                1
+            ],
+            [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ]
+        ];
+    };
     _module_('Wdr.Controllers', function (Wdr, Controllers) {
         this.DungeonController = function (super$) {
             extends$(DungeonController, super$);
@@ -1272,18 +1473,23 @@ void function () {
                 super$.apply(this, arguments);
             }
             DungeonController.prototype.index = function (req) {
-                var dungeon;
-                dungeon = this.reuse(Dungeon);
-                dungeon.$appendTo('#scene-root');
-                dungeon.$data.name = req.name;
+                this.vm = this.reuse(Dungeon);
+                this.vm.$appendTo('#scene-root');
+                this.vm.$data.name = req.name;
+                this.vm.$data.cells = _.flatten(createDummyDungeon());
                 localStorage.resumePoint = location.hash;
-                return dungeon.on('start-battle', function (this$) {
+                this.vm.on('start-battle', function (this$) {
                     return function () {
                         wdr.context = {
                             from: location.hash,
                             enemies: ['goblin']
                         };
                         return this$.navigate('battle');
+                    };
+                }(this));
+                return this.vm.on('back', function (this$) {
+                    return function () {
+                        return this$.navigate('camp');
                     };
                 }(this));
             };
@@ -1416,7 +1622,8 @@ Wdr.createRoutes = function (router) {
     router.match('camp', 'Camp#index');
     router.match('dungeon-select', 'DungeonSelect#index');
     router.match('dungeons/:name', 'Dungeon#index');
-    return router.match('battle', 'Battle#index');
+    router.match('battle', 'Battle#index');
+    return router.match('battle-result', 'BattleResult#index');
 };
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
@@ -1471,6 +1678,7 @@ _module_('Wdr', function (Wdr) {
             this.loadPlaySession = function (a) {
                 return Application.prototype.loadPlaySession.apply(instance$, arguments);
             };
+            this.events = [];
         }
         return Application;
     }();
@@ -1592,6 +1800,7 @@ void function () {
         return Wdr.createRoutes(new Warden());
     };
     $(function () {
+        $('body').empty();
         FastClick.attach(document.body);
         return initializeStorages().then(function () {
             window.wdr = new Wdr.Application();

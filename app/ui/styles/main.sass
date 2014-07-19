@@ -2,8 +2,37 @@
 @import bourbon/bourbon
 @import neat/neat
 
-$WIDTH: 580px
-$HEIGHT: 330px
+$WIDTH: 568px
+$HEIGHT: 320px
+
+=button-shutter($c: #e7d93c, $c-text: #222)
+  +inline-block
+  overflow: hidden
+  position: relative
+  text-decoration: none
+  padding: 10px 30px
+  font-size: 14px
+  color: $c-text
+  background-color: transparent
+  border: 1px solid $c-text
+  max-width: 160px
+
+  &:before
+    +inline-block
+    +transition(top, 0.3s)
+    +skewY(-20deg)
+    position: absolute
+    top: -160px
+    left: 0
+    background-color: $c
+    content: '　'
+    width: 100%
+    height: 120px
+    z-index: -1
+  &:hover
+    &:before
+      top: -40px
+
 
 input[type="button"], input[type="submit"], button
   border-radius: 0
@@ -30,7 +59,7 @@ body
   background-color: linen
 
 #wdr-container
-  margin: 0 auto
+  // margin: 0 auto
   width: $WIDTH
   height: $HEIGHT
   background-color: linen
@@ -38,6 +67,11 @@ body
 
 // #scene-root
 //   padding: 10px
+
+a, a:link, a:visited, a:hover, a:active
+  color: black
+  text-decoration: underline
+
 
 .entry-container
   .save-data-list
@@ -64,3 +98,14 @@ body
           width: 100%
           height: 45px
           padding: 1px 0
+
+
+.dungeon-container
+  .map-container
+    position: relative
+    @include region(50px, 50px, 400px, 350px)
+    .cell
+      display: inline-block
+      width: 20px
+      height: 20px
+      background-color: green

@@ -61,6 +61,7 @@ startRouter = ->
   Wdr.createRoutes new Warden
 
 $ =>
+  $('body').empty()
   FastClick.attach(document.body)
   initializeStorages().then =>
     window.wdr = new Wdr.Application

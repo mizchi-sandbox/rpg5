@@ -41,9 +41,11 @@ module Wdr.Controllers
         waitSkillSelect: (userInputContext) => new Promise (done) =>
           @vm.$data.inputState = 'skill-select'
           getSkills = -> [
-            {name: '攻撃', skillId:'attack', targetType: 'single'}
+            {name: '攻撃', skillId:'attack',   targetType: 'single'}
             {name: '防御', skillId:'defenece', targetType: 'none'}
+            {name: '逃走', skillId:'escape',   targetType: 'none'}
           ]
+
           @vm.$data.skills = getSkills()
 
           @vm.$on 'skill-selected', (skillId) =>
@@ -133,7 +135,9 @@ module Wdr.Controllers
             @end()
 
     end: ->
-      if localStorage.resumePoint
-        @navigate localStorage.resumePoint
-      else
-        @navigate 'camp'
+      @navigate 'battle-result'
+      # if localStorage.resumePoint
+      #   # @navigate localStorage.resumePoint
+      #   @navigate 'battle-result'
+      # else
+      #   @navigate 'camp'

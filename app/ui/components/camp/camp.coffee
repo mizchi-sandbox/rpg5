@@ -5,11 +5,11 @@ module Wdr.UI.Components.Camp
     template: _cc ->
       h1 'Camp'
       text 'name: {{playerName}}'
-
       div 'gold: {{gold}}'
 
-      a href:'dungeon-select', -> 'ダンジョンへ'
-      a href:'', 'ログアウト'
-
-      button 'v-dispatcher':'debug-add-gold', -> 'add coin'
-      button 'v-dispatcher':'save', 'save'
+      ul class:'menu', ->
+        li -> a href:'dungeon-select', -> 'ダンジョンへ'
+        li -> a -> '装備'
+        li -> a -> 'スキル'
+        li -> a -> 'ショップ'
+        li -> a href:'', 'ログアウト'

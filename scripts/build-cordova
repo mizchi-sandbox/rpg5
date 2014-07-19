@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+cp -r ./public/* ./cordova/www/
+cd cordova/
+cordova build

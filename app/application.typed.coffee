@@ -15,3 +15,5 @@ module Wdr
     savePlaySession: ->
     constructor :: () -> Any
     constructor: ->
+      @events = []
+      

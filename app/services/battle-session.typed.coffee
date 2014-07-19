@@ -25,6 +25,9 @@ module Wdr.Services
       else if skillId is 'defenece'
         console.log 'defenece'
 
+      else if skillId is 'escape'
+        console.log 'escape'
+
       actor.wt.current = 1
 
     isBattleFinisihed: ->
@@ -39,7 +42,7 @@ module Wdr.Services
       if result = @isBattleFinisihed()
         done([result])
 
-      reports = []
+      reports = [ ]
       for p in [].concat(@players, @enemies)
         continue if p.hp.current < 1
 
@@ -63,4 +66,3 @@ module Wdr.Services
     toJSON: ->
       players: @players.map (p) -> p.toJSON()
       enemies: @enemies.map (e) -> e.toJSON()
-

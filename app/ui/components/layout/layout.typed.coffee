@@ -11,14 +11,25 @@ module Wdr.UI.Components.Layout
         'v-show': 'showHeader',
         'v-transition': true
         }, ->
-          a href:'/camp', 'Camp'
+          text 'debug'
+          button 'v-on':'click: toCamp', 'キャンプへ'
+          button 'v-on':'click: addGold', -> 'ゴールド増加'
+          button 'v-on':'click: save', 'save'
           button 'v-on':'click: clearStorages', '初期化'
 
     methods:
+      toCamp: ->
+        Warden.navigate('camp')
+
       clearStorages: ->
         localforage.clear().then =>
           Warden.navigate('/')
           window.location.reload()
 
-console.log _cc ->
-  span 'v-transition': true, -> 'aaa'
+      addGold: ->
+        wdr.currentSession.gold += 100
+
+      save: ->
+        wdr.currentSession.save().done =>
+          console.log 'save done'
+
