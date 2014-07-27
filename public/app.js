@@ -18,23 +18,7 @@ window._cc = function (tpl, obj) {
 window._p = function (fullfill, fail) {
     return new Promise(fullfill, fail);
 };
-_module_('Wdr.ValueObjects', function (Wdr, ValueObjects) {
-    this.Report = function () {
-        0;
-        0;
-        0;
-        function Report(param$) {
-            var cache$;
-            {
-                cache$ = param$;
-                this.eventType = cache$.eventType;
-                this.log = cache$.log;
-                this.battlerId = cache$.battlerId;
-            }
-        }
-        return Report;
-    }();
-});
+
 _module_('Wdr.ValueObjects', function (Wdr, ValueObjects) {
     this.ValueWithMax = function () {
         0;

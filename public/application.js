@@ -9,7 +9,6 @@ var Wdr;
                 return Id;
             })();
             Base.Id = Id;
-
             var Entity = (function () {
                 function Entity() {
                     this.id = new Id();
@@ -25,7 +24,21 @@ var Wdr;
     })(Wdr.Entities || (Wdr.Entities = {}));
     var Entities = Wdr.Entities;
 })(Wdr || (Wdr = {}));
-/// <reference path="../../typings/tsd.d.ts" />
-/// <reference path="entities/base/entity.ts" />
+var Wdr;
+(function (Wdr) {
+    (function (ValueObjects) {
+        
+        var Report = (function () {
+            function Report(data) {
+                this.eventType = data.eventType;
+                this.log = data.log;
+                this.battlerId = data.battlerId;
+            }
+            return Report;
+        })();
+        ValueObjects.Report = Report;
+    })(Wdr.ValueObjects || (Wdr.ValueObjects = {}));
+    var ValueObjects = Wdr.ValueObjects;
+})(Wdr || (Wdr = {}));
 console.log('application initialized');
 //# sourceMappingURL=application.js.map
