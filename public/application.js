@@ -46,6 +46,7 @@ var Wdr;
         var ValueWithMax = (function () {
             function ValueWithMax(current, max) {
                 this.current = current;
+                this.max = max;
                 this.max = max ? max : current;
             }
             return ValueWithMax;

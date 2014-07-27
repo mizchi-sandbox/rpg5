@@ -1,9 +1,9 @@
 module Wdr.ValueObjects{
   export class ValueWithMax {
-    current: number;
-    max: number;
-    constructor(current: number, max: number){
-      this.current = current;
+    constructor(
+      public current: number,
+      public max: number
+    ){
       this.max = max ? max : current;
     }
   }
