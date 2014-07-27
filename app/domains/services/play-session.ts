@@ -1,15 +1,3 @@
-declare module Wdr.Storages {
-  export class SaveObject {
-    static findOne(query:any);
-    save(data: any): any;
-  }
-
-  export class Actor {
-    static find(query:any):any;
-    save(data: any): any;
-  }
-}
-
 module Wdr.Services {
   export class PlaySession{
     gold: number;

@@ -15,65 +15,6 @@ window._cc = function (tpl, obj) {
 window._p = function (fullfill, fail) {
     return new Promise(fullfill, fail);
 };
-_module_('Wdr.Storages', function (Wdr, Storages) {
-    this.Actor = function (super$) {
-        extends$(Actor, super$);
-        function Actor() {
-            super$.apply(this, arguments);
-        }
-        Actor.prototype.key = 'actors';
-        0;
-        0;
-        0;
-        0;
-        0;
-        0;
-        return Actor;
-    }(Momic.Model);
-});
-function isOwn$(o, p) {
-    return {}.hasOwnProperty.call(o, p);
-}
-function extends$(child, parent) {
-    for (var key in parent)
-        if (isOwn$(parent, key))
-            child[key] = parent[key];
-    function ctor() {
-        this.constructor = child;
-    }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor();
-    child.__super__ = parent.prototype;
-    return child;
-}
-_module_('Wdr.Storages', function (Wdr, Storages) {
-    this.SaveObject = function (super$) {
-        extends$(SaveObject, super$);
-        function SaveObject() {
-            super$.apply(this, arguments);
-        }
-        SaveObject.prototype.key = 'saves';
-        0;
-        0;
-        0;
-        return SaveObject;
-    }(Momic.Model);
-});
-function isOwn$(o, p) {
-    return {}.hasOwnProperty.call(o, p);
-}
-function extends$(child, parent) {
-    for (var key in parent)
-        if (isOwn$(parent, key))
-            child[key] = parent[key];
-    function ctor() {
-        this.constructor = child;
-    }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor();
-    child.__super__ = parent.prototype;
-    return child;
-}
 Vue.directive('dispatcher', {
     isLiteral: true,
     bind: function (value) {
@@ -129,21 +70,6 @@ _module_('Wdr.UI.Components.Base', function (Wdr, UI, Components, Base) {
         }
     });
 });
-function isOwn$(o, p) {
-    return {}.hasOwnProperty.call(o, p);
-}
-function extends$(child, parent) {
-    for (var key in parent)
-        if (isOwn$(parent, key))
-            child[key] = parent[key];
-    function ctor() {
-        this.constructor = child;
-    }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor();
-    child.__super__ = parent.prototype;
-    return child;
-}
 void function () {
     var Component;
     Component = Wdr.UI.Components.Base.Component;
@@ -182,21 +108,6 @@ void function () {
             }
         });
     });
-    function isOwn$(o, p) {
-        return {}.hasOwnProperty.call(o, p);
-    }
-    function extends$(child, parent) {
-        for (var key in parent)
-            if (isOwn$(parent, key))
-                child[key] = parent[key];
-        function ctor() {
-            this.constructor = child;
-        }
-        ctor.prototype = parent.prototype;
-        child.prototype = new ctor();
-        child.__super__ = parent.prototype;
-        return child;
-    }
 }.call(this);
 void function () {
     var Battler, Component, Skill, Target;
@@ -289,21 +200,6 @@ void function () {
             })
         });
     });
-    function isOwn$(o, p) {
-        return {}.hasOwnProperty.call(o, p);
-    }
-    function extends$(child, parent) {
-        for (var key in parent)
-            if (isOwn$(parent, key))
-                child[key] = parent[key];
-        function ctor() {
-            this.constructor = child;
-        }
-        ctor.prototype = parent.prototype;
-        child.prototype = new ctor();
-        child.__super__ = parent.prototype;
-        return child;
-    }
 }.call(this);
 void function () {
     var Component;
@@ -342,21 +238,6 @@ void function () {
             })
         });
     });
-    function isOwn$(o, p) {
-        return {}.hasOwnProperty.call(o, p);
-    }
-    function extends$(child, parent) {
-        for (var key in parent)
-            if (isOwn$(parent, key))
-                child[key] = parent[key];
-        function ctor() {
-            this.constructor = child;
-        }
-        ctor.prototype = parent.prototype;
-        child.prototype = new ctor();
-        child.__super__ = parent.prototype;
-        return child;
-    }
 }.call(this);
 void function () {
     var Component;
@@ -379,21 +260,6 @@ void function () {
             }
         });
     });
-    function isOwn$(o, p) {
-        return {}.hasOwnProperty.call(o, p);
-    }
-    function extends$(child, parent) {
-        for (var key in parent)
-            if (isOwn$(parent, key))
-                child[key] = parent[key];
-        function ctor() {
-            this.constructor = child;
-        }
-        ctor.prototype = parent.prototype;
-        child.prototype = new ctor();
-        child.__super__ = parent.prototype;
-        return child;
-    }
 }.call(this);
 void function () {
     var Component;
@@ -417,21 +283,6 @@ void function () {
             })
         });
     });
-    function isOwn$(o, p) {
-        return {}.hasOwnProperty.call(o, p);
-    }
-    function extends$(child, parent) {
-        for (var key in parent)
-            if (isOwn$(parent, key))
-                child[key] = parent[key];
-        function ctor() {
-            this.constructor = child;
-        }
-        ctor.prototype = parent.prototype;
-        child.prototype = new ctor();
-        child.__super__ = parent.prototype;
-        return child;
-    }
 }.call(this);
 void function () {
     var Component;
@@ -466,21 +317,6 @@ void function () {
             }
         });
     });
-    function isOwn$(o, p) {
-        return {}.hasOwnProperty.call(o, p);
-    }
-    function extends$(child, parent) {
-        for (var key in parent)
-            if (isOwn$(parent, key))
-                child[key] = parent[key];
-        function ctor() {
-            this.constructor = child;
-        }
-        ctor.prototype = parent.prototype;
-        child.prototype = new ctor();
-        child.__super__ = parent.prototype;
-        return child;
-    }
 }.call(this);
 void function () {
     var Component;
@@ -527,21 +363,6 @@ void function () {
             }
         });
     });
-    function isOwn$(o, p) {
-        return {}.hasOwnProperty.call(o, p);
-    }
-    function extends$(child, parent) {
-        for (var key in parent)
-            if (isOwn$(parent, key))
-                child[key] = parent[key];
-        function ctor() {
-            this.constructor = child;
-        }
-        ctor.prototype = parent.prototype;
-        child.prototype = new ctor();
-        child.__super__ = parent.prototype;
-        return child;
-    }
 }.call(this);
 void function () {
     var Layout;

@@ -1,22 +1,6 @@
 var Wdr;
 (function (Wdr) {
     (function (ValueObjects) {
-        
-        var Report = (function () {
-            function Report(data) {
-                this.eventType = data.eventType;
-                this.log = data.log;
-                this.battlerId = data.battlerId;
-            }
-            return Report;
-        })();
-        ValueObjects.Report = Report;
-    })(Wdr.ValueObjects || (Wdr.ValueObjects = {}));
-    var ValueObjects = Wdr.ValueObjects;
-})(Wdr || (Wdr = {}));
-var Wdr;
-(function (Wdr) {
-    (function (ValueObjects) {
         var ValueWithMax = (function () {
             function ValueWithMax(current, max) {
                 this.current = current;
@@ -31,6 +15,21 @@ var Wdr;
 })(Wdr || (Wdr = {}));
 var Wdr;
 (function (Wdr) {
+    (function (ValueObjects) {
+        var Report = (function () {
+            function Report(data) {
+                this.eventType = data.eventType;
+                this.log = data.log;
+                this.battlerId = data.battlerId;
+            }
+            return Report;
+        })();
+        ValueObjects.Report = Report;
+    })(Wdr.ValueObjects || (Wdr.ValueObjects = {}));
+    var ValueObjects = Wdr.ValueObjects;
+})(Wdr || (Wdr = {}));
+var Wdr;
+(function (Wdr) {
     (function (Entities) {
         (function (Base) {
             var Id = (function () {
@@ -40,6 +39,7 @@ var Wdr;
                 return Id;
             })();
             Base.Id = Id;
+
             var Entity = (function () {
                 function Entity() {
                     this.id = new Id();
@@ -64,7 +64,6 @@ var __extends = this.__extends || function (d, b) {
 var Wdr;
 (function (Wdr) {
     (function (Entities) {
-        
         var Actor = (function (_super) {
             __extends(Actor, _super);
             function Actor(name, lv, job, status) {
@@ -83,6 +82,7 @@ var Wdr;
     })(Wdr.Entities || (Wdr.Entities = {}));
     var Entities = Wdr.Entities;
 })(Wdr || (Wdr = {}));
+// ValueWithMax = Wdr.ValueObjects.ValueWithMax
 var Wdr;
 (function (Wdr) {
     (function (Entities) {
@@ -100,6 +100,7 @@ var Wdr;
                 Battler.create = function (data) {
                     return new Battler(data.name, data.lv, data.hp, data.wt, data.id);
                 };
+
                 Battler.prototype.toJSON = function () {
                     return {
                         name: this.name,
@@ -123,7 +124,6 @@ var Wdr;
     })(Wdr.Entities || (Wdr.Entities = {}));
     var Entities = Wdr.Entities;
 })(Wdr || (Wdr = {}));
-
 var Wdr;
 (function (Wdr) {
     (function (Services) {
@@ -157,63 +157,73 @@ var Wdr;
                     Wdr.Entities.Battle.Battler.create({ name: 'mizchi', lv: 1, hp: 30, wt: 10, id: 1 }),
                     Wdr.Entities.Battle.Battler.create({ name: 'bot', lv: 3, hp: 20, wt: 30, id: 2 })
                 ];
+
                 this.enemies = [
                     Wdr.Entities.Battle.Battler.create({ name: 'goblin#1', lv: 1, wt: 15, hp: 12, id: 3 }),
                     Wdr.Entities.Battle.Battler.create({ name: 'goblin#2', lv: 1, wt: 15, hp: 12, id: 4 }),
                     Wdr.Entities.Battle.Battler.create({ name: 'goblin#3', lv: 1, wt: 15, hp: 12, id: 5 })
                 ];
             }
+            // findBattlerById :: String -> Wdr.Entities.Battle.Battler?
             BattleSession.prototype.findBattlerById = function (battlerId) {
-                return _.find([].concat(this.players, this.enemies), function (battler) { return battler.id === battlerId; });
+                return _.find([].concat(this.players, this.enemies), function (battler) {
+                    return battler.id === battlerId;
+                });
             };
+
             BattleSession.prototype.execAction = function (data) {
                 var actorId = data.actorId;
                 var skillId = data.skillId;
                 var targetId = data.targetId ? data.targetId : _.sample(this.enemies).id;
+
                 var actor = this.findBattlerById(actorId);
+
                 if (skillId === 'attack') {
                     var target = this.findBattlerById(targetId);
                     target.hp.current -= 4;
                     console.log('attack');
-                }
-                else if (skillId === 'defenece') {
+                } else if (skillId === 'defenece') {
                     console.log('defenece');
-                }
-                else if (skillId === 'escape') {
+                } else if (skillId === 'escape') {
                     console.log('escape');
                 }
                 actor.wt.current = 1;
             };
+
             BattleSession.prototype.isBattleFinisihed = function () {
-                if (_.all(this.enemies.map(function (e) { return e.hp.current <= 0; }))) {
+                if (_.all(this.enemies.map(function (e) {
+                    return e.hp.current <= 0;
+                }))) {
                     return { eventType: 'player-win' };
-                }
-                else if (_.all(this.enemies.map(function (e) { return e.hp.current <= 0; }))) {
+                } else if (_.all(this.enemies.map(function (e) {
+                    return e.hp.current <= 0;
+                }))) {
                     return { eventType: 'enemy-win' };
                 }
                 return false;
             };
+
             BattleSession.prototype.processTurn = function () {
                 var _this = this;
                 var result = this.isBattleFinisihed();
                 if (result)
                     return [result];
+
                 var reports = [];
                 [].concat(this.players, this.enemies).map(function (p) {
                     if (p.hp.current < 1)
                         return;
+
                     if (p.wt.current < p.wt.max) {
                         p.wt.current++;
-                    }
-                    else {
+                    } else {
                         if (_.contains(_this.players, p)) {
                             reports.push(new Wdr.ValueObjects.Report({
                                 eventType: 'stopForUserInput',
                                 log: p.name + "は入力を待っている",
                                 battlerId: p.id
                             }));
-                        }
-                        else {
+                        } else {
                             p.wt.current = 1;
                             reports.push(new Wdr.ValueObjects.Report({
                                 eventType: 'action',
@@ -225,10 +235,15 @@ var Wdr;
                 });
                 return reports;
             };
+
             BattleSession.prototype.toJSON = function () {
                 return {
-                    players: this.players.map(function (p) { return p.toJSON(); }),
-                    enemies: this.enemies.map(function (e) { return e.toJSON(); })
+                    players: this.players.map(function (p) {
+                        return p.toJSON();
+                    }),
+                    enemies: this.enemies.map(function (e) {
+                        return e.toJSON();
+                    })
                 };
             };
             return BattleSession;
@@ -237,6 +252,48 @@ var Wdr;
     })(Wdr.Services || (Wdr.Services = {}));
     var Services = Wdr.Services;
 })(Wdr || (Wdr = {}));
+var Wdr;
+(function (Wdr) {
+    (function (Storages) {
+        var Actor = (function (_super) {
+            __extends(Actor, _super);
+            function Actor() {
+                _super.apply(this, arguments);
+            }
+            return Actor;
+        })(Momic.Model);
+        Storages.Actor = Actor;
+        Actor.prototype['key'] = 'actors';
+    })(Wdr.Storages || (Wdr.Storages = {}));
+    var Storages = Wdr.Storages;
+})(Wdr || (Wdr = {}));
+
+var Wdr;
+(function (Wdr) {
+    (function (Storages) {
+        var SaveObject = (function (_super) {
+            __extends(SaveObject, _super);
+            function SaveObject() {
+                _super.apply(this, arguments);
+            }
+            return SaveObject;
+        })(Momic.Model);
+        Storages.SaveObject = SaveObject;
+        SaveObject.prototype['key'] = 'saves';
+    })(Wdr.Storages || (Wdr.Storages = {}));
+    var Storages = Wdr.Storages;
+})(Wdr || (Wdr = {}));
+/// <reference path="../../typings/tsd.d.ts" />
+/// <reference path="../../typings/momic.d.ts" />
+/// <reference path="value-objects/value-with-max.ts" />
+/// <reference path="value-objects/report.ts" />
+/// <reference path="value-objects/status.ts" />
+/// <reference path="entities/base/entity.ts" />
+/// <reference path="entities/actor.ts" />
+/// <reference path="entities/battle/battler.ts" />
+/// <reference path="services/play-session.ts" />
+/// <reference path="services/battle-session.ts" />
+/// <reference path="../storages/actor.ts" />
 console.log('application initialized');
 var Wdr;
 (function (Wdr) {
@@ -252,7 +309,9 @@ var Wdr;
                 _this.currentSession.name = saveObject.name;
                 _this.currentSession.gold = saveObject.gold;
                 Wdr.Storages.Actor.find({ ownerId: saveObject.id }).then(function (actors) {
-                    _this.currentSession.actors = actors.map(function (actor) { return Wdr.Entities.Actor.create(actor); });
+                    _this.currentSession.actors = actors.map(function (actor) {
+                        return Wdr.Entities.Actor.create(actor);
+                    });
                     _this.loaded = true;
                     done(null);
                 });

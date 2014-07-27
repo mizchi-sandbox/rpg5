@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 tcoffee -c \
   app/utils.coffee \
-  app/storages/**/*.coffee \
   app/ui/components/**/*.coffee \
   app/controllers/**/*.coffee \
   app/routes.coffee \
