@@ -50,28 +50,7 @@ _module_('Wdr.ValueObjects', function (Wdr, ValueObjects) {
         return ValueWithMax;
     }();
 });
-_module_('Wdr.Entities.Base', function (Wdr, Entities, Base) {
-    Id = this.Id = function () {
-        0;
-        function Id() {
-            this.value = _.uniqueId();
-        }
-        Id.prototype.equal = function (other) {
-            return this.value === other.value;
-        };
-        return Id;
-    }();
-    this.Entity = function () {
-        0;
-        function Entity() {
-            this.id = new Id();
-        }
-        Entity.prototype.equal = function (other) {
-            return this.id.equal(other.id);
-        };
-        return Entity;
-    }();
-});
+
 _module_('Wdr.Entities', function (Wdr, Entities) {
     this.Actor = function (super$) {
         extends$(Actor, super$);

@@ -25,7 +25,4 @@ var Wdr;
     })(Wdr.Entities || (Wdr.Entities = {}));
     var Entities = Wdr.Entities;
 })(Wdr || (Wdr = {}));
-/// <reference path="../../typings/tsd.d.ts" />
-/// <reference path="entities/base/entity.ts" />
-console.log('application initialized');
-//# sourceMappingURL=application.js.map
+//# sourceMappingURL=entity.js.map
