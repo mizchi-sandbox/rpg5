@@ -238,4 +238,30 @@ var Wdr;
     var Services = Wdr.Services;
 })(Wdr || (Wdr = {}));
 console.log('application initialized');
+var Wdr;
+(function (Wdr) {
+    var Application = (function () {
+        function Application() {
+            this.events = [];
+        }
+        Application.prototype.loadPlaySession = function (saveObject) {
+            var _this = this;
+            return new Promise(function (done) {
+                _this.currentSession = new Wdr.Services.PlaySession();
+                _this.currentSession.saveId = saveObject.id;
+                _this.currentSession.name = saveObject.name;
+                _this.currentSession.gold = saveObject.gold;
+                Wdr.Storages.Actor.find({ ownerId: saveObject.id }).then(function (actors) {
+                    _this.currentSession.actors = actors.map(function (actor) { return Wdr.Entities.Actor.create(actor); });
+                    _this.loaded = true;
+                    done(null);
+                });
+            });
+        };
+        Application.prototype.savePlaySession = function () {
+        };
+        return Application;
+    })();
+    Wdr.Application = Application;
+})(Wdr || (Wdr = {}));
 //# sourceMappingURL=application.js.map

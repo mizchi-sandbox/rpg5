@@ -3,6 +3,11 @@ declare module Wdr.Storages {
     static findOne(query:any);
     save(data: any): any;
   }
+
+  export class Actor {
+    static find(query:any):any;
+    save(data: any): any;
+  }
 }
 
 module Wdr.Services {
@@ -11,6 +16,7 @@ module Wdr.Services {
     name: string;
     saveId: string;
     players: Wdr.Entities.Actor[];
+    actors:  Wdr.Entities.Actor[];
 
     save(){ return new Promise((done) => {
       Wdr.Storages.SaveObject.findOne({

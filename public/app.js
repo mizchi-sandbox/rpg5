@@ -1,7 +1,4 @@
 var _include_,_module_;_module_=function(e){return function(t,n,r){var i,s,o,u,a,f,l;r==null&&(r=o),o=(f=typeof window!=="undefined"&&window!==null?window:global)!=null?f:e,r==null&&(r=o),i=[],l=t.split(".");for(u=0,a=l.length;u<a;u++)s=l[u],r[s]==null&&(r[s]={}),r=r[s],i.push(r);return n.apply(r,i)}}(this),_include_=function(e,t){var n,r;for(n in t)r=t[n],e[n]=r;return t};
-_module_('_', function (_) {
-    0;
-});
 _module_('Wdr.Utils', function (Wdr, Utils) {
     this.template = function (str, obj) {
         if (null == obj)
@@ -18,8 +15,6 @@ window._cc = function (tpl, obj) {
 window._p = function (fullfill, fail) {
     return new Promise(fullfill, fail);
 };
-
-
 _module_('Wdr.Storages', function (Wdr, Storages) {
     this.Actor = function (super$) {
         extends$(Actor, super$);
@@ -1106,57 +1101,6 @@ Wdr.createRoutes = function (router) {
     router.match('battle', 'Battle#index');
     return router.match('battle-result', 'BattleResult#index');
 };
-function isOwn$(o, p) {
-    return {}.hasOwnProperty.call(o, p);
-}
-function extends$(child, parent) {
-    for (var key in parent)
-        if (isOwn$(parent, key))
-            child[key] = parent[key];
-    function ctor() {
-        this.constructor = child;
-    }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor();
-    child.__super__ = parent.prototype;
-    return child;
-}
-_module_('Wdr', function (Wdr) {
-    this.Application = function () {
-        0;
-        Application.prototype.loadPlaySession = function (saveObject) {
-            return new Promise(function (this$) {
-                return function (done) {
-                    this$.currentSession = new Wdr.Services.PlaySession();
-                    this$.currentSession.saveId = saveObject.id;
-                    this$.currentSession.name = saveObject.name;
-                    this$.currentSession.gold = saveObject.gold;
-                    return Wdr.Storages.Actor.find({ ownerId: saveObject.id }).then(function (this$1) {
-                        return function (actors) {
-                            this$1.currentSession.actors = actors.map(function (actor) {
-                                return Wdr.Entities.Actor.create(actor);
-                            });
-                            this$1.loaded = true;
-                            return done();
-                        };
-                    }(this$));
-                };
-            }(this));
-        };
-        Application.prototype.savePlaySession = function () {
-        };
-        0;
-        function Application() {
-            var instance$;
-            instance$ = this;
-            this.loadPlaySession = function (a) {
-                return Application.prototype.loadPlaySession.apply(instance$, arguments);
-            };
-            this.events = [];
-        }
-        return Application;
-    }();
-});
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
