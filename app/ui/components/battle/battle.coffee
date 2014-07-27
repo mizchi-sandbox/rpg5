@@ -1,4 +1,4 @@
-Component = Wdr.UI.Components.Base.Component
+Component = require '../_base/component'
 
 # struct Battle.Skill
 #   name :: String
@@ -49,32 +49,31 @@ Target = Component.extend
 # Dispatchable Events
 #   target-selected
 #   skill-selected
-module Wdr.UI.Components
-  @Battle = Component.extend
-    components:
-      battler: Battler
-      skill: Skill
-      target: Target
+module.exports = Battle = Component.extend
+  components:
+    battler: Battler
+    skill  : Skill
+    target : Target
 
-    template: _cc ->
-      div class: 'battle-container', ->
-        ul class: 'players', ->
-          li 'v-repeat':'players', 'v-component':'battler'
+  template: _cc ->
+    div class: 'battle-container', ->
+      ul class: 'players', ->
+        li 'v-repeat':'players', 'v-component':'battler'
 
-        ul class: 'enemies', ->
-          li 'v-repeat':'enemies', 'v-component':'battler'
+      ul class: 'enemies', ->
+        li 'v-repeat':'enemies', 'v-component':'battler'
 
-        div class:'user-controller', 'v-show':'onUserInput', ->
-          div 'v-show': "inputState == \'skill-select\'", ->
-            ul class: 'skills', ->
-              li 'v-repeat':'skills', 'v-component':'skill'
+      div class:'user-controller', 'v-show':'onUserInput', ->
+        div 'v-show': "inputState == \'skill-select\'", ->
+          ul class: 'skills', ->
+            li 'v-repeat':'skills', 'v-component':'skill'
 
-          div 'v-show': "inputState == \'target-select\'", ->
-            ul class: 'targets', ->
-              li 'v-repeat':'targets', 'v-component':'target'
-              li ->
-                button 'v-dispatcher':'back-to-skill-select', -> '戻る'
+        div 'v-show': "inputState == \'target-select\'", ->
+          ul class: 'targets', ->
+            li 'v-repeat':'targets', 'v-component':'target'
+            li ->
+              button 'v-dispatcher':'back-to-skill-select', -> '戻る'
 
-        hr()
-        ul class: 'logs', ->
-          li 'v-repeat':'log', -> '{{message}}'
+      hr()
+      ul class: 'logs', ->
+        li 'v-repeat':'log', -> '{{message}}'

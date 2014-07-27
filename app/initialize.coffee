@@ -1,4 +1,19 @@
+require './utils'
+require './ui/controllers/battle-controller'
+require './ui/controllers/battle-result-controller'
+require './ui/controllers/camp-controller'
+require './ui/controllers/dungeon-controller'
+require './ui/controllers/dungeon-select-controller'
+require './ui/controllers/entry-controller'
+routes = require './routes'
+
 localforage.setDriver('localStorageWrapper')
+window.addEventListener "mousedown", ((e) -> e.preventDefault()), false
+window.addEventListener "mousemove", ((e) -> e.preventDefault()), false
+window.addEventListener "mouseup", ((e) -> e.preventDefault()), false
+window.addEventListener "touchstart", ((e) -> e.preventDefault()), false
+window.addEventListener "touchmove", ((e) -> e.preventDefault()), false
+window.addEventListener "touchend", ((e) -> e.preventDefault()), false
 
 createDummySave = -> new Promise (done) ->
   Wdr.Storages.SaveObject.insert(
@@ -53,12 +68,12 @@ initializeStorages = -> new Promise (done) ->
 
 # wdr :: Wdr.Application
 restoreLastSession = -> new Promise (done) ->
-  Wdr.Storages.SaveObject.findOne(id: localStorage.currentPlayerId).then (saveObject :: Wdr.Storages.SaveObject) =>
+  Wdr.Storages.SaveObject.findOne(id: localStorage.currentPlayerId).then (saveObject) =>
     wdr.loadPlaySession(saveObject).then => done()
 
 startRouter = ->
   Warden.replaceLinksToHashChange()
-  Wdr.createRoutes new Warden
+  routes(new Warden)
 
 $ =>
   $('body').empty()
@@ -69,11 +84,4 @@ $ =>
       restoreLastSession().then => startRouter()
     else
       startRouter()
-
-window.addEventListener "mousedown", ((e) -> e.preventDefault()), false
-window.addEventListener "mousemove", ((e) -> e.preventDefault()), false
-window.addEventListener "mouseup", ((e) -> e.preventDefault()), false
-window.addEventListener "touchstart", ((e) -> e.preventDefault()), false
-window.addEventListener "touchmove", ((e) -> e.preventDefault()), false
-window.addEventListener "touchend", ((e) -> e.preventDefault()), false
 

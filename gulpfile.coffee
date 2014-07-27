@@ -10,7 +10,19 @@ browserify = require 'browserify'
 typescript = require 'gulp-tsc'
 tsd        = require 'gulp-tsd'
 
-gulp.task 'js', shell.task ['zsh build.zsh']
+# gulp.task 'js', shell.task ['zsh build.zsh']
+gulp.task 'js', ->
+  browserify
+    entries: ['./app/initialize.coffee']
+    extensions: ['.coffee', '.js']
+    # standalone: ""
+    debug: true
+  .transform 'coffeeify'
+  .bundle()
+  .pipe plumber()
+  .pipe source 'app.js'
+  .pipe gulp.dest './build'
+
 gulp.task 'ts', ->
   gulp
     .src [

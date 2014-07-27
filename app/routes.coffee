@@ -1,4 +1,4 @@
-Wdr.createRoutes = (router) ->
+module.exports = (router) ->
   router.match '', 'Entry#index'
   router.match 'camp', 'Camp#index'
   router.match 'dungeon-select', 'DungeonSelect#index'
