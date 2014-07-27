@@ -5,4 +5,5 @@
 /// <reference path="entities/actor.ts" />
 /// <reference path="entities/battle/battler.ts" />
 /// <reference path="services/play-session.ts" />
+/// <reference path="services/battle-session.ts" />
 console.log('application initialized');

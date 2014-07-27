@@ -18,142 +18,7 @@ window._cc = function (tpl, obj) {
 window._p = function (fullfill, fail) {
     return new Promise(fullfill, fail);
 };
-_module_('Wdr.Services', function (Wdr, Services) {
-    this.BattleSession = function () {
-        function BattleSession() {
-            this.players = [
-                Wdr.Entities.Battle.Battler.create({
-                    name: 'mizchi',
-                    lv: 1,
-                    hp: 30,
-                    wt: 10,
-                    id: 1
-                }),
-                Wdr.Entities.Battle.Battler.create({
-                    name: 'bot',
-                    lv: 3,
-                    hp: 20,
-                    wt: 30,
-                    id: 2
-                })
-            ];
-            this.enemies = [
-                Wdr.Entities.Battle.Battler.create({
-                    name: 'goblin#1',
-                    lv: 1,
-                    wt: 15,
-                    hp: 12,
-                    id: 3
-                }),
-                Wdr.Entities.Battle.Battler.create({
-                    name: 'goblin#2',
-                    lv: 1,
-                    wt: 15,
-                    hp: 12,
-                    id: 4
-                }),
-                Wdr.Entities.Battle.Battler.create({
-                    name: 'goblin#3',
-                    lv: 1,
-                    wt: 15,
-                    hp: 12,
-                    id: 5
-                })
-            ];
-        }
-        BattleSession.prototype.findBattlerById = function (battlerId) {
-            return _.find([].concat(this.players, this.enemies), function (battler) {
-                return battler.id === battlerId;
-            });
-        };
-        BattleSession.prototype.execAction = function (param$) {
-            var actor, actorId, cache$, skillId, target, targetId;
-            {
-                cache$ = param$;
-                actorId = cache$.actorId;
-                skillId = cache$.skillId;
-                targetId = cache$.targetId;
-            }
-            if (null != targetId)
-                targetId;
-            else
-                targetId = _.sample(this.enemies).id;
-            actor = this.findBattlerById(actorId);
-            if (skillId === 'attack') {
-                target = this.findBattlerById(targetId);
-                target.hp.current -= 4;
-                console.log('attack');
-            } else if (skillId === 'defenece') {
-                console.log('defenece');
-            } else if (skillId === 'escape') {
-                console.log('escape');
-            }
-            return actor.wt.current = 1;
-        };
-        BattleSession.prototype.isBattleFinisihed = function () {
-            if (_.all(this.enemies.map(function (e) {
-                    return e.hp.current <= 0;
-                }))) {
-                return { eventType: 'player-win' };
-            } else if (_.all(this.enemies.map(function (e) {
-                    return e.hp.current <= 0;
-                }))) {
-                return { eventType: 'enemy-win' };
-            } else {
-                return false;
-            }
-        };
-        BattleSession.prototype.processTurn = function () {
-            return new Promise(function (this$) {
-                return function (done) {
-                    var p, reports, result;
-                    if (result = this$.isBattleFinisihed())
-                        done([result]);
-                    reports = [];
-                    for (var cache$ = [].concat(this$.players, this$.enemies), i$ = 0, length$ = cache$.length; i$ < length$; ++i$) {
-                        p = cache$[i$];
-                        if (p.hp.current < 1)
-                            continue;
-                        if (p.wt.current < p.wt.max) {
-                            p.wt.current++;
-                        } else if (in$(p, this$.players)) {
-                            reports.push(new Wdr.ValueObjects.Report({
-                                eventType: 'stopForUserInput',
-                                log: '' + p.name + '\u306f\u5165\u529b\u3092\u5f85\u3063\u3066\u3044\u308b',
-                                battlerId: p.id
-                            }));
-                        } else {
-                            p.wt.current = 1;
-                            reports.push(new Wdr.ValueObjects.Report({
-                                eventType: 'action',
-                                log: '' + p.name + '\u306e\u884c\u52d5',
-                                battlerId: p.id
-                            }));
-                        }
-                    }
-                    return done(reports);
-                };
-            }(this));
-        };
-        BattleSession.prototype.toJSON = function () {
-            return {
-                players: this.players.map(function (p) {
-                    return p.toJSON();
-                }),
-                enemies: this.enemies.map(function (e) {
-                    return e.toJSON();
-                })
-            };
-        };
-        return BattleSession;
-    }();
-});
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
-}
+
 
 _module_('Wdr.Storages', function (Wdr, Storages) {
     this.Actor = function (super$) {
@@ -171,12 +36,6 @@ _module_('Wdr.Storages', function (Wdr, Storages) {
         return Actor;
     }(Momic.Model);
 });
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
-}
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
@@ -205,12 +64,6 @@ _module_('Wdr.Storages', function (Wdr, Storages) {
         return SaveObject;
     }(Momic.Model);
 });
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
-}
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
@@ -281,12 +134,6 @@ _module_('Wdr.UI.Components.Base', function (Wdr, UI, Components, Base) {
         }
     });
 });
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
-}
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
@@ -340,12 +187,6 @@ void function () {
             }
         });
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -453,12 +294,6 @@ void function () {
             })
         });
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -512,12 +347,6 @@ void function () {
             })
         });
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -555,12 +384,6 @@ void function () {
             }
         });
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -599,12 +422,6 @@ void function () {
             })
         });
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -654,12 +471,6 @@ void function () {
             }
         });
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -721,12 +532,6 @@ void function () {
             }
         });
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -763,12 +568,6 @@ void function () {
     Warden.prototype.findController = function (controllerName) {
         return Wdr.Controllers[controllerName + 'Controller'];
     };
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -976,22 +775,20 @@ void function () {
                 var update;
                 return (update = function (this$) {
                     return function () {
-                        return this$.session.processTurn().then(function (this$1) {
-                            return function (reports) {
-                                return reports.reduce(this$1.processReport, Promise.resolve()).then(function (this$2) {
+                        var reports;
+                        reports = this$.session.processTurn();
+                        return reports.reduce(this$.processReport, Promise.resolve()).then(function (this$1) {
+                            return function () {
+                                return setTimeout(function (this$2) {
                                     return function () {
-                                        return setTimeout(function (this$3) {
-                                            return function () {
-                                                this$3.sync();
-                                                return update();
-                                            };
-                                        }(this$2), 50);
+                                        this$2.sync();
+                                        return update();
                                     };
-                                }(this$1), function (this$2) {
-                                    return function () {
-                                        return this$2.end();
-                                    };
-                                }(this$1));
+                                }(this$1), 50);
+                            };
+                        }(this$), function (this$1) {
+                            return function () {
+                                return this$1.end();
                             };
                         }(this$));
                     };
@@ -1003,12 +800,6 @@ void function () {
             return BattleController;
         }(Controller);
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1052,12 +843,6 @@ void function () {
             return BattleResultController;
         }(Controller);
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1093,12 +878,6 @@ void function () {
             return CampController;
         }(Controllers.Base.Controller);
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1216,12 +995,6 @@ void function () {
             return DungeonController;
         }(Controller);
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1256,12 +1029,6 @@ void function () {
             return DungeonSelectController;
         }(Controller);
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1315,12 +1082,6 @@ void function () {
             return EntryController;
         }(Controllers.Base.Controller);
     });
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1345,12 +1106,6 @@ Wdr.createRoutes = function (router) {
     router.match('battle', 'Battle#index');
     return router.match('battle-result', 'BattleResult#index');
 };
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
-}
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
@@ -1402,12 +1157,6 @@ _module_('Wdr', function (Wdr) {
         return Application;
     }();
 });
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
-}
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
@@ -1550,12 +1299,6 @@ void function () {
     window.addEventListener('touchend', function (e) {
         return e.preventDefault();
     }, false);
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }

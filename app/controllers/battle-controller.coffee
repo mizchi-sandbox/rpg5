@@ -124,15 +124,17 @@ module Wdr.Controllers
     # startGameLoop :: () -> ()
     startGameLoop: =>
       do update = =>
-        @session.processTurn().then (reports) =>
-          reports.reduce(@processReport, Promise.resolve())
-          .then (=>
-            setTimeout (=>
-              @sync()
-              update()
-            ), 50
-          ), =>
-            @end()
+        reports = @session.processTurn()
+        # debugger
+
+        reports.reduce(@processReport, Promise.resolve())
+        .then (=>
+          setTimeout (=>
+            @sync()
+            update()
+          ), 50
+        ), =>
+          @end()
 
     end: ->
       @navigate 'battle-result'
