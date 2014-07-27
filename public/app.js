@@ -21,41 +21,7 @@ window._p = function (fullfill, fail) {
 
 
 
-_module_('Wdr.Entities', function (Wdr, Entities) {
-    this.Actor = function (super$) {
-        extends$(Actor, super$);
-        0;
-        0;
-        0;
-        0;
-        function Actor(param$) {
-            var cache$;
-            {
-                cache$ = param$;
-                this.name = cache$.name;
-                this.lv = cache$.lv;
-                this.job = cache$.job;
-                this.status = cache$.status;
-            }
-        }
-        return Actor;
-    }(Wdr.Entities.Base.Entity);
-});
-function isOwn$(o, p) {
-    return {}.hasOwnProperty.call(o, p);
-}
-function extends$(child, parent) {
-    for (var key in parent)
-        if (isOwn$(parent, key))
-            child[key] = parent[key];
-    function ctor() {
-        this.constructor = child;
-    }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor();
-    child.__super__ = parent.prototype;
-    return child;
-}
+
 void function () {
     var ValueWithMax;
     ValueWithMax = Wdr.ValueObjects.ValueWithMax;
@@ -1610,7 +1576,7 @@ _module_('Wdr', function (Wdr) {
                     return Wdr.Storages.Actor.find({ ownerId: saveObject.id }).then(function (this$1) {
                         return function (actors) {
                             this$1.currentSession.actors = actors.map(function (actor) {
-                                return new Wdr.Entities.Actor(actor);
+                                return Wdr.Entities.Actor.create(actor);
                             });
                             this$1.loaded = true;
                             return done();

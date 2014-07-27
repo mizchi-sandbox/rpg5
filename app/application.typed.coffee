@@ -8,7 +8,7 @@ module Wdr
       @currentSession.name = saveObject.name
       @currentSession.gold = saveObject.gold
       Wdr.Storages.Actor.find(ownerId: saveObject.id).then (actors) =>
-        @currentSession.actors = actors.map (actor) => new Wdr.Entities.Actor actor
+        @currentSession.actors = actors.map (actor) => Wdr.Entities.Actor.create(actor)
         @loaded = true
         done()
 
@@ -16,4 +16,3 @@ module Wdr
     constructor :: () -> Any
     constructor: ->
       @events = []
-      
