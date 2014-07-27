@@ -123,5 +123,30 @@ var Wdr;
     })(Wdr.Entities || (Wdr.Entities = {}));
     var Entities = Wdr.Entities;
 })(Wdr || (Wdr = {}));
+
+var Wdr;
+(function (Wdr) {
+    (function (Services) {
+        var PlaySession = (function () {
+            function PlaySession() {
+            }
+            PlaySession.prototype.save = function () {
+                var _this = this;
+                return new Promise(function (done) {
+                    Wdr.Storages.SaveObject.findOne({
+                        id: _this.saveId
+                    }).then(function (saveObject) {
+                        saveObject.save({
+                            gold: _this.gold
+                        }).then(done);
+                    });
+                });
+            };
+            return PlaySession;
+        })();
+        Services.PlaySession = PlaySession;
+    })(Wdr.Services || (Wdr.Services = {}));
+    var Services = Wdr.Services;
+})(Wdr || (Wdr = {}));
 console.log('application initialized');
 //# sourceMappingURL=application.js.map

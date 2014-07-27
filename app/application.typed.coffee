@@ -1,6 +1,6 @@
 module Wdr
   class @Application
-    currentSession :: Wdr.Services.PlaySession
+    # currentSession :: Wdr.Services.PlaySession
     loadPlaySession :: Wdr.Storages.SaveObject -> Any
     loadPlaySession: (saveObject :: Wdr.Storages.SaveObject) => new Promise (done) =>
       @currentSession = new Wdr.Services.PlaySession

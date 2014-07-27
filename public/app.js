@@ -154,34 +154,7 @@ function in$(member, list) {
             return true;
     return false;
 }
-_module_('Wdr.Services', function (Wdr, Services) {
-    this.PlaySession = function () {
-        function PlaySession() {
-        }
-        0;
-        0;
-        0;
-        0;
-        PlaySession.prototype.save = function () {
-            return new Promise(function (this$) {
-                return function (done) {
-                    return Wdr.Storages.SaveObject.findOne({ id: this$.saveId }).then(function (this$1) {
-                        return function (saveObject) {
-                            return saveObject.save({ gold: this$1.gold }).then(done);
-                        };
-                    }(this$));
-                };
-            }(this));
-        };
-        return PlaySession;
-    }();
-});
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
-}
+
 _module_('Wdr.Storages', function (Wdr, Storages) {
     this.Actor = function (super$) {
         extends$(Actor, super$);
@@ -1395,7 +1368,6 @@ function extends$(child, parent) {
 }
 _module_('Wdr', function (Wdr) {
     this.Application = function () {
-        0;
         0;
         Application.prototype.loadPlaySession = function (saveObject) {
             return new Promise(function (this$) {
