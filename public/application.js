@@ -83,5 +83,45 @@ var Wdr;
     })(Wdr.Entities || (Wdr.Entities = {}));
     var Entities = Wdr.Entities;
 })(Wdr || (Wdr = {}));
+var Wdr;
+(function (Wdr) {
+    (function (Entities) {
+        (function (Battle) {
+            var Battler = (function (_super) {
+                __extends(Battler, _super);
+                function Battler(name, lv, hp, wt, id) {
+                    _super.call(this);
+                    this.name = name;
+                    this.lv = lv;
+                    this.id = id;
+                    this.hp = new Wdr.ValueObjects.ValueWithMax(hp, hp);
+                    this.wt = new Wdr.ValueObjects.ValueWithMax(0, wt);
+                }
+                Battler.create = function (data) {
+                    return new Battler(data.name, data.lv, data.hp, data.wt, data.id);
+                };
+                Battler.prototype.toJSON = function () {
+                    return {
+                        name: this.name,
+                        id: this.id,
+                        lv: this.lv,
+                        wt: {
+                            current: this.wt.current,
+                            max: this.wt.max
+                        },
+                        hp: {
+                            current: this.hp.current,
+                            max: this.hp.max
+                        }
+                    };
+                };
+                return Battler;
+            })(Wdr.Entities.Base.Entity);
+            Battle.Battler = Battler;
+        })(Entities.Battle || (Entities.Battle = {}));
+        var Battle = Entities.Battle;
+    })(Wdr.Entities || (Wdr.Entities = {}));
+    var Entities = Wdr.Entities;
+})(Wdr || (Wdr = {}));
 console.log('application initialized');
 //# sourceMappingURL=application.js.map

@@ -21,60 +21,6 @@ window._p = function (fullfill, fail) {
 
 
 
-
-void function () {
-    var ValueWithMax;
-    ValueWithMax = Wdr.ValueObjects.ValueWithMax;
-    _module_('Wdr.Entities.Battle', function (Wdr, Entities, Battle) {
-        this.Battler = function (super$) {
-            extends$(Battler, super$);
-            function Battler(param$) {
-                var cache$, hp, wt;
-                {
-                    cache$ = param$;
-                    this.name = cache$.name;
-                    this.lv = cache$.lv;
-                    hp = cache$.hp;
-                    wt = cache$.wt;
-                    this.id = cache$.id;
-                }
-                this.hp = new Wdr.ValueObjects.ValueWithMax(hp, hp);
-                this.wt = new Wdr.ValueObjects.ValueWithMax(0, wt);
-            }
-            Battler.prototype.toJSON = function () {
-                return {
-                    name: this.name,
-                    id: this.id,
-                    lv: this.lv,
-                    wt: {
-                        current: this.wt.current,
-                        max: this.wt.max
-                    },
-                    hp: {
-                        current: this.hp.current,
-                        max: this.hp.max
-                    }
-                };
-            };
-            return Battler;
-        }(Wdr.Entities.Base.Entity);
-    });
-    function isOwn$(o, p) {
-        return {}.hasOwnProperty.call(o, p);
-    }
-    function extends$(child, parent) {
-        for (var key in parent)
-            if (isOwn$(parent, key))
-                child[key] = parent[key];
-        function ctor() {
-            this.constructor = child;
-        }
-        ctor.prototype = parent.prototype;
-        child.prototype = new ctor();
-        child.__super__ = parent.prototype;
-        return child;
-    }
-}.call(this);
 _module_('Wdr.Entities', function (Wdr, Entities) {
     this.Player = function (super$) {
         extends$(Player, super$);
@@ -161,14 +107,14 @@ _module_('Wdr.Services', function (Wdr, Services) {
     this.BattleSession = function () {
         function BattleSession() {
             this.players = [
-                new Wdr.Entities.Battle.Battler({
+                Wdr.Entities.Battle.Battler.create({
                     name: 'mizchi',
                     lv: 1,
                     hp: 30,
                     wt: 10,
                     id: 1
                 }),
-                new Wdr.Entities.Battle.Battler({
+                Wdr.Entities.Battle.Battler.create({
                     name: 'bot',
                     lv: 3,
                     hp: 20,
@@ -177,21 +123,21 @@ _module_('Wdr.Services', function (Wdr, Services) {
                 })
             ];
             this.enemies = [
-                new Wdr.Entities.Battle.Battler({
+                Wdr.Entities.Battle.Battler.create({
                     name: 'goblin#1',
                     lv: 1,
                     wt: 15,
                     hp: 12,
                     id: 3
                 }),
-                new Wdr.Entities.Battle.Battler({
+                Wdr.Entities.Battle.Battler.create({
                     name: 'goblin#2',
                     lv: 1,
                     wt: 15,
                     hp: 12,
                     id: 4
                 }),
-                new Wdr.Entities.Battle.Battler({
+                Wdr.Entities.Battle.Battler.create({
                     name: 'goblin#3',
                     lv: 1,
                     wt: 15,

@@ -2,13 +2,13 @@ module Wdr.Services
   class @BattleSession
     constructor: ->
       @players = [
-        new Wdr.Entities.Battle.Battler {name: 'mizchi', lv: 1, hp: 30, wt: 10, id: 1}
-        new Wdr.Entities.Battle.Battler {name: 'bot', lv: 3, hp: 20, wt: 30, id: 2}
+        Wdr.Entities.Battle.Battler.create {name: 'mizchi', lv: 1, hp: 30, wt: 10, id: 1}
+        Wdr.Entities.Battle.Battler.create {name: 'bot', lv: 3, hp: 20, wt: 30, id: 2}
       ]
       @enemies = [
-        new Wdr.Entities.Battle.Battler {name: 'goblin#1', lv: 1, wt:15, hp: 12, id: 3}
-        new Wdr.Entities.Battle.Battler {name: 'goblin#2', lv: 1, wt:15, hp: 12, id: 4}
-        new Wdr.Entities.Battle.Battler {name: 'goblin#3', lv: 1, wt:15, hp: 12, id: 5}
+        Wdr.Entities.Battle.Battler.create {name: 'goblin#1', lv: 1, wt:15, hp: 12, id: 3}
+        Wdr.Entities.Battle.Battler.create {name: 'goblin#2', lv: 1, wt:15, hp: 12, id: 4}
+        Wdr.Entities.Battle.Battler.create {name: 'goblin#3', lv: 1, wt:15, hp: 12, id: 5}
       ]
 
     # findBattlerById :: String -> Wdr.Entities.Battle.Battler?
