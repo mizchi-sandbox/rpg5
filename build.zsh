@@ -2,7 +2,6 @@
 tcoffee -c \
   app/typings/**/*.coffee \
   app/utils.coffee \
-  app/entities/**/*.coffee \
   app/services/**/*.coffee \
   app/storages/**/*.coffee \
   app/ui/components/**/*.coffee \

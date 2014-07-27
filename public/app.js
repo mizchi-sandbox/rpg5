@@ -18,91 +18,6 @@ window._cc = function (tpl, obj) {
 window._p = function (fullfill, fail) {
     return new Promise(fullfill, fail);
 };
-
-
-
-_module_('Wdr.Entities', function (Wdr, Entities) {
-    this.Player = function (super$) {
-        extends$(Player, super$);
-        function Player(data) {
-            this.name = data.name;
-            this.gold = data.gold;
-        }
-        Player.prototype.save = function () {
-            return db.players.update({
-                id: this.id,
-                name: this.name,
-                lv: this.lv,
-                gold: this.gold
-            });
-        };
-        Player.prototype.toJSON = function () {
-            return {
-                id: this.id,
-                name: this.name,
-                lv: this.lv,
-                gold: this.gold
-            };
-        };
-        Player.prototype.canPuchaseExtendables = function (extendableId, count) {
-            var extendableData;
-            if (null == count)
-                count = 1;
-            extendableData = ExtendablesData[extendableId];
-            return this.gold >= extendableData.value * count;
-        };
-        Player.prototype.purchaseExtendables = function (extendableId, count) {
-            if (null == count)
-                count = 1;
-            return new Promise(function (this$) {
-                return function (done) {
-                    var data;
-                    data = ExtendablesData[extendableId];
-                    this$.gold -= data.value * count;
-                    return this$.save().then(function () {
-                        return db.extendables.findOne({
-                            extendableId: data.extendableId,
-                            playerId: player.id
-                        }).then(function (owned) {
-                            var stuff;
-                            if (null != owned) {
-                                owned.amount += count;
-                                return db.extendables.update(owned).then(function () {
-                                    return done();
-                                });
-                            } else {
-                                stuff = {
-                                    extendableId: data.extendableId,
-                                    playerId: player.id,
-                                    amount: count
-                                };
-                                return db.extendables.insert(stuff).then(function () {
-                                    return done();
-                                });
-                            }
-                        });
-                    });
-                };
-            }(this));
-        };
-        return Player;
-    }(Wdr.Entities.Base.Entity);
-});
-function isOwn$(o, p) {
-    return {}.hasOwnProperty.call(o, p);
-}
-function extends$(child, parent) {
-    for (var key in parent)
-        if (isOwn$(parent, key))
-            child[key] = parent[key];
-    function ctor() {
-        this.constructor = child;
-    }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor();
-    child.__super__ = parent.prototype;
-    return child;
-}
 _module_('Wdr.Services', function (Wdr, Services) {
     this.BattleSession = function () {
         function BattleSession() {
@@ -233,21 +148,6 @@ _module_('Wdr.Services', function (Wdr, Services) {
         return BattleSession;
     }();
 });
-function isOwn$(o, p) {
-    return {}.hasOwnProperty.call(o, p);
-}
-function extends$(child, parent) {
-    for (var key in parent)
-        if (isOwn$(parent, key))
-            child[key] = parent[key];
-    function ctor() {
-        this.constructor = child;
-    }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor();
-    child.__super__ = parent.prototype;
-    return child;
-}
 function in$(member, list) {
     for (var i = 0, length = list.length; i < length; ++i)
         if (i in list && list[i] === member)
@@ -276,21 +176,6 @@ _module_('Wdr.Services', function (Wdr, Services) {
         return PlaySession;
     }();
 });
-function isOwn$(o, p) {
-    return {}.hasOwnProperty.call(o, p);
-}
-function extends$(child, parent) {
-    for (var key in parent)
-        if (isOwn$(parent, key))
-            child[key] = parent[key];
-    function ctor() {
-        this.constructor = child;
-    }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor();
-    child.__super__ = parent.prototype;
-    return child;
-}
 function in$(member, list) {
     for (var i = 0, length = list.length; i < length; ++i)
         if (i in list && list[i] === member)
@@ -313,6 +198,12 @@ _module_('Wdr.Storages', function (Wdr, Storages) {
         return Actor;
     }(Momic.Model);
 });
+function in$(member, list) {
+    for (var i = 0, length = list.length; i < length; ++i)
+        if (i in list && list[i] === member)
+            return true;
+    return false;
+}
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
@@ -327,12 +218,6 @@ function extends$(child, parent) {
     child.prototype = new ctor();
     child.__super__ = parent.prototype;
     return child;
-}
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
 }
 _module_('Wdr.Storages', function (Wdr, Storages) {
     this.SaveObject = function (super$) {
@@ -347,6 +232,12 @@ _module_('Wdr.Storages', function (Wdr, Storages) {
         return SaveObject;
     }(Momic.Model);
 });
+function in$(member, list) {
+    for (var i = 0, length = list.length; i < length; ++i)
+        if (i in list && list[i] === member)
+            return true;
+    return false;
+}
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
@@ -361,12 +252,6 @@ function extends$(child, parent) {
     child.prototype = new ctor();
     child.__super__ = parent.prototype;
     return child;
-}
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
 }
 Vue.directive('dispatcher', {
     isLiteral: true,
@@ -423,6 +308,12 @@ _module_('Wdr.UI.Components.Base', function (Wdr, UI, Components, Base) {
         }
     });
 });
+function in$(member, list) {
+    for (var i = 0, length = list.length; i < length; ++i)
+        if (i in list && list[i] === member)
+            return true;
+    return false;
+}
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
@@ -437,12 +328,6 @@ function extends$(child, parent) {
     child.prototype = new ctor();
     child.__super__ = parent.prototype;
     return child;
-}
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
 }
 void function () {
     var Component;
@@ -482,6 +367,12 @@ void function () {
             }
         });
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -496,12 +387,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -595,6 +480,12 @@ void function () {
             })
         });
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -609,12 +500,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -654,6 +539,12 @@ void function () {
             })
         });
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -668,12 +559,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -697,6 +582,12 @@ void function () {
             }
         });
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -711,12 +602,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -741,6 +626,12 @@ void function () {
             })
         });
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -755,12 +646,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -796,6 +681,12 @@ void function () {
             }
         });
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -810,12 +701,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -863,6 +748,12 @@ void function () {
             }
         });
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -877,12 +768,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -905,6 +790,12 @@ void function () {
     Warden.prototype.findController = function (controllerName) {
         return Wdr.Controllers[controllerName + 'Controller'];
     };
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -919,12 +810,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -1145,6 +1030,12 @@ void function () {
             return BattleController;
         }(Controller);
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1159,12 +1050,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -1194,6 +1079,12 @@ void function () {
             return BattleResultController;
         }(Controller);
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1208,12 +1099,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -1235,6 +1120,12 @@ void function () {
             return CampController;
         }(Controllers.Base.Controller);
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1249,12 +1140,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -1358,6 +1243,12 @@ void function () {
             return DungeonController;
         }(Controller);
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1372,12 +1263,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -1398,6 +1283,12 @@ void function () {
             return DungeonSelectController;
         }(Controller);
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1412,12 +1303,6 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
 void function () {
@@ -1457,6 +1342,12 @@ void function () {
             return EntryController;
         }(Controllers.Base.Controller);
     });
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1472,12 +1363,6 @@ void function () {
         child.__super__ = parent.prototype;
         return child;
     }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
-    }
 }.call(this);
 Wdr.createRoutes = function (router) {
     router.match('', 'Entry#index');
@@ -1487,6 +1372,12 @@ Wdr.createRoutes = function (router) {
     router.match('battle', 'Battle#index');
     return router.match('battle-result', 'BattleResult#index');
 };
+function in$(member, list) {
+    for (var i = 0, length = list.length; i < length; ++i)
+        if (i in list && list[i] === member)
+            return true;
+    return false;
+}
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
@@ -1501,12 +1392,6 @@ function extends$(child, parent) {
     child.prototype = new ctor();
     child.__super__ = parent.prototype;
     return child;
-}
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
 }
 _module_('Wdr', function (Wdr) {
     this.Application = function () {
@@ -1545,6 +1430,12 @@ _module_('Wdr', function (Wdr) {
         return Application;
     }();
 });
+function in$(member, list) {
+    for (var i = 0, length = list.length; i < length; ++i)
+        if (i in list && list[i] === member)
+            return true;
+    return false;
+}
 function isOwn$(o, p) {
     return {}.hasOwnProperty.call(o, p);
 }
@@ -1559,12 +1450,6 @@ function extends$(child, parent) {
     child.prototype = new ctor();
     child.__super__ = parent.prototype;
     return child;
-}
-function in$(member, list) {
-    for (var i = 0, length = list.length; i < length; ++i)
-        if (i in list && list[i] === member)
-            return true;
-    return false;
 }
 void function () {
     var createCheatSave, createDummySave, initializeStorages, restoreLastSession, startRouter;
@@ -1693,6 +1578,12 @@ void function () {
     window.addEventListener('touchend', function (e) {
         return e.preventDefault();
     }, false);
+    function in$(member, list) {
+        for (var i = 0, length = list.length; i < length; ++i)
+            if (i in list && list[i] === member)
+                return true;
+        return false;
+    }
     function isOwn$(o, p) {
         return {}.hasOwnProperty.call(o, p);
     }
@@ -1707,11 +1598,5 @@ void function () {
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    }
-    function in$(member, list) {
-        for (var i = 0, length = list.length; i < length; ++i)
-            if (i in list && list[i] === member)
-                return true;
-        return false;
     }
 }.call(this);
