@@ -19,21 +19,7 @@ window._p = function (fullfill, fail) {
     return new Promise(fullfill, fail);
 };
 
-_module_('Wdr.ValueObjects', function (Wdr, ValueObjects) {
-    this.ValueWithMax = function () {
-        0;
-        0;
-        function ValueWithMax(param$, param$1) {
-            this.current = param$;
-            this.max = param$1;
-            if (null != this.max)
-                this.max;
-            else
-                this.max = this.current;
-        }
-        return ValueWithMax;
-    }();
-});
+
 
 _module_('Wdr.Entities', function (Wdr, Entities) {
     this.Actor = function (super$) {
@@ -76,10 +62,6 @@ void function () {
     _module_('Wdr.Entities.Battle', function (Wdr, Entities, Battle) {
         this.Battler = function (super$) {
             extends$(Battler, super$);
-            0;
-            0;
-            0;
-            0;
             function Battler(param$) {
                 var cache$, hp, wt;
                 {

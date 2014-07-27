@@ -40,5 +40,19 @@ var Wdr;
     })(Wdr.ValueObjects || (Wdr.ValueObjects = {}));
     var ValueObjects = Wdr.ValueObjects;
 })(Wdr || (Wdr = {}));
+var Wdr;
+(function (Wdr) {
+    (function (ValueObjects) {
+        var ValueWithMax = (function () {
+            function ValueWithMax(current, max) {
+                this.current = current;
+                this.max = max ? max : current;
+            }
+            return ValueWithMax;
+        })();
+        ValueObjects.ValueWithMax = ValueWithMax;
+    })(Wdr.ValueObjects || (Wdr.ValueObjects = {}));
+    var ValueObjects = Wdr.ValueObjects;
+})(Wdr || (Wdr = {}));
 console.log('application initialized');
 //# sourceMappingURL=application.js.map
